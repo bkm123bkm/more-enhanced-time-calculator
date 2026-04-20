@@ -252,8 +252,13 @@ st.markdown(
         font-size: 0.85rem;
     }}
     
-    .session-duration.work { color: var(--primary); }
-    .session-duration.break { color: var(--warning); }
+    .session-duration.work {{
+        color: var(--primary);
+    }}
+    
+    .session-duration.break {{
+        color: var(--warning);
+    }}
     
     .live-tag {{
         background: var(--success);
@@ -642,7 +647,7 @@ def render_sessions_panel(work: list, breaks: list):
     )
 
 
-def render_logout_status(deadline: dt.datetime, first: dt.datetime, now: dt.datetime, show_sessions: bool):
+def render_logout_status(deadline: dt.datetime, first: dt.datetime, now: dt.datetime):
     if now < deadline:
         time_str = deadline.strftime("%I:%M %p").lstrip("0")
         if deadline.date() != first.date():
@@ -698,9 +703,7 @@ def member_dashboard(points: list, day_type: str):
             render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
     # Logout status
-    is_completed = render_logout_status(deadline, points[0], now, result["has_ongoing"])
-    
-    return is_completed
+    render_logout_status(deadline, points[0], now)
 
 
 def leader_dashboard(points: list, day_type: str):
@@ -734,9 +737,7 @@ def leader_dashboard(points: list, day_type: str):
             render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
     # Logout status
-    is_completed = render_logout_status(deadline, points[0], now, result["has_ongoing"])
-    
-    return is_completed
+    render_logout_status(deadline, points[0], now)
 
 
 # ── Live Fragments ────────────────────────────────────────────────────────────
