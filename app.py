@@ -7,7 +7,7 @@ import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parent
 ICON_PATH = BASE_DIR / "Icon.png"
-PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⏱️"
+PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⚡"
 PUNE_TZ = ZoneInfo("Asia/Kolkata")
 
 # Widget keys (Streamlit-owned). Never assign programmatically to these keys.
@@ -24,374 +24,460 @@ def now_pune() -> dt.datetime:
 
 
 st.set_page_config(
-    page_title="More Enhanced Time Calculator",
+    page_title="Chronos | Time Intelligence",
     page_icon=PAGE_ICON,
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
+
+# ============================================================================
+# COMPLETE REDESIGN - MODERN DARK/LIGHT THEME WITH GLASSMORPHISM
+# ============================================================================
 
 st.markdown(
     """
     <style>
-    :root {
-        --accent-gold: #d4af72;
-        --accent-gold-hover: #c49c5f;
-        --accent-gold-soft: #f2ddbb;
-        --card-topline: #1e3a8a;
+    /* ========== CSS RESET & VARIABLES ========== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
+    
+    * {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
     }
-
+    
+    /* ========== THEME VARIABLES ========== */
+    [data-theme="light"] {
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-glass: rgba(255, 255, 255, 0.75);
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --border: #e2e8f0;
+        --border-glow: rgba(99, 102, 241, 0.15);
+        --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+        --accent: #6366f1;
+        --accent-dark: #4f46e5;
+        --accent-glow: rgba(99, 102, 241, 0.25);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    [data-theme="dark"] {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-glass: rgba(30, 41, 59, 0.8);
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        --border: #334155;
+        --border-glow: rgba(99, 102, 241, 0.2);
+        --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4);
+        --accent: #818cf8;
+        --accent-dark: #6366f1;
+        --accent-glow: rgba(129, 140, 248, 0.3);
+        --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    /* ========== GLOBAL STYLES ========== */
     .stApp {
-        background: var(--background-color);
+        background: var(--bg-primary);
+        transition: all 0.3s ease;
     }
-
+    
     .block-container {
-        max-width: 1200px;
-        padding-top: 2.2rem;
+        max-width: 1400px !important;
+        padding: 1.5rem 2rem !important;
     }
-
-    h1, h2, h3 {
-        color: var(--text-color) !important;
-        letter-spacing: 0.3px;
-        font-weight: 700;
-        text-wrap: balance;
+    
+    /* ========== ANIMATIONS ========== */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
-
-    h1 {
-        font-size: 3rem !important;
-        margin-bottom: 0.2rem;
-        font-family: "Georgia", "Times New Roman", serif;
+    
+    @keyframes pulse-ring {
+        0% { transform: scale(0.8); opacity: 0.5; }
+        100% { transform: scale(1.4); opacity: 0; }
     }
-
-    p, label, .stCaption {
-        color: color-mix(in srgb, var(--text-color) 70%, transparent) !important;
+    
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
     }
-
-    div[data-testid="stMetric"] {
-        background: linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--secondary-background-color) 95%, transparent) 0%,
-            color-mix(in srgb, var(--secondary-background-color) 85%, transparent) 100%
-        );
-        border: 1px solid color-mix(in srgb, var(--accent-gold) 22%, var(--text-color));
-        border-radius: 16px;
-        padding: 14px;
-        box-shadow: 0 12px 26px color-mix(in srgb, black 20%, transparent);
-        backdrop-filter: blur(2px);
-        position: relative;
-        overflow: hidden;
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-
-    div[data-testid="stMetric"]::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent 0%, var(--card-topline) 50%, transparent 100%);
-        opacity: 0.85;
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
-
-    div[data-testid="stMetricLabel"] {
-        color: var(--muted) !important;
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
-
-    div[data-testid="stMetricValue"] {
-        color: var(--text-color) !important;
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    /* ========== TYPOGRAPHY ========== */
+    h1, h2, h3, h4, h5, h6 {
         font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        background: var(--gradient-1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent !important;
     }
-
+    
+    h1 {
+        font-size: 2.8rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    /* ========== GLASS CARD COMPONENTS ========== */
+    .glass-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--card-shadow);
+        padding: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 25px 40px -12px rgba(99, 102, 241, 0.2);
+    }
+    
+    /* ========== METRIC CARDS ========== */
+    div[data-testid="stMetric"] {
+        background: var(--bg-glass) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 20px !important;
+        padding: 1rem 1.25rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        animation: scaleIn 0.4s ease-out forwards;
+        opacity: 0;
+    }
+    
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-4px) scale(1.02);
+        border-color: var(--accent) !important;
+        box-shadow: 0 20px 35px -12px var(--accent-glow) !important;
+    }
+    
+    div[data-testid="stMetricLabel"] {
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: var(--text-secondary) !important;
+    }
+    
+    div[data-testid="stMetricValue"] {
+        font-size: 1.8rem !important;
+        font-weight: 800 !important;
+        background: var(--gradient-1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent !important;
+    }
+    
+    /* ========== TEXT AREA ========== */
     .stTextArea textarea {
-        border: 1px solid color-mix(in srgb, var(--accent-gold) 22%, var(--text-color));
-        border-radius: 12px;
-        background: var(--secondary-background-color);
-        color: var(--text-color);
-        box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+        background: var(--bg-glass) !important;
+        backdrop-filter: blur(8px) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        color: var(--text-primary) !important;
+        font-size: 0.9rem !important;
+        padding: 1rem !important;
+        transition: all 0.2s ease !important;
     }
-
+    
     .stTextArea textarea:focus {
-        border-color: var(--accent-gold) !important;
-        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-gold) 28%, transparent) !important;
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px var(--accent-glow) !important;
+        outline: none !important;
     }
-
-    /* Hide "Press Ctrl+Enter to apply" hint */
-    .stTextArea [data-testid="InputInstructions"],
-    .stTextArea small {
-        display: none !important;
-    }
-
-    /* Disable all hyperlinks — plain non-clickable text */
-    a, a:hover, a:visited, a:active, a:focus {
-        pointer-events: none !important;
-        cursor: default !important;
-        text-decoration: none !important;
-        color: inherit !important;
-    }
-
-    /* Hide Streamlit anchor link icons */
-    a[data-testid="stMarkdownAnchorLink"],
-    .st-anchor-link,
-    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-    }
-
+    
+    /* ========== BUTTONS ========== */
     .stButton > button,
     .stFormSubmitButton > button {
-        background: linear-gradient(180deg, #e2c18a 0%, var(--accent-gold) 100%);
-        color: #1a1308 !important;
-        border-radius: 12px;
-        border: 1px solid color-mix(in srgb, #fff 22%, var(--accent-gold));
-        font-weight: 700;
-        transition: all 0.15s ease;
-        box-shadow: 0 10px 22px rgba(212, 175, 114, 0.28);
-        opacity: 1 !important;
-        min-height: 2.8rem;
+        background: var(--gradient-1) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 40px !important;
+        padding: 0.6rem 1.5rem !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 15px var(--accent-glow) !important;
     }
-
-    .stButton > button:hover:not(:disabled),
-    .stFormSubmitButton > button:hover:not(:disabled) {
-        background: linear-gradient(180deg, #edd2a5 0%, var(--accent-gold-hover) 100%);
-        transform: translateY(-1px) scale(1.01);
-        box-shadow: 0 14px 30px rgba(212, 175, 114, 0.34);
+    
+    .stButton > button:hover,
+    .stFormSubmitButton > button:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 25px var(--accent-glow) !important;
     }
-
-    .stButton > button:disabled {
-        background-color: #6f634f !important;
-        color: #d7c9b2 !important;
-        opacity: 0.7 !important;
-        cursor: not-allowed;
-        box-shadow: none;
+    
+    .stButton > button:active {
+        transform: translateY(0) scale(0.98);
     }
-
-    .stMarkdown, .stText {
-        color: var(--text-color);
+    
+    /* ========== TABS ========== */
+    [data-testid="stTabs"] [role="tablist"] {
+        gap: 0.5rem !important;
+        background: var(--bg-glass) !important;
+        backdrop-filter: blur(8px) !important;
+        border-radius: 60px !important;
+        padding: 0.5rem !important;
+        border: 1px solid var(--border) !important;
     }
-
-    hr {
-        border-color: color-mix(in srgb, var(--accent-gold) 25%, transparent);
+    
+    [data-testid="stTabs"] [role="tab"] {
+        border-radius: 40px !important;
+        padding: 0.5rem 1.5rem !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        transition: all 0.2s ease !important;
     }
-
-    /* Disable all hyperlinks globally — plain non-clickable text */
-    a, a:hover, a:visited, a:active, a:focus {
-        pointer-events: none !important;
-        cursor: default !important;
-        text-decoration: none !important;
-        color: inherit !important;
+    
+    [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+        background: var(--gradient-1) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px var(--accent-glow) !important;
     }
-
+    
+    [data-testid="stTabs"] [role="tabpanel"] {
+        animation: slideInUp 0.4s ease-out;
+        padding-top: 1.5rem;
+    }
+    
+    /* ========== RADIO BUTTONS ========== */
+    [data-testid="stRadio"] {
+        background: var(--bg-glass);
+        backdrop-filter: blur(8px);
+        border-radius: 60px;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        display: inline-flex;
+    }
+    
+    [data-testid="stRadio"] label {
+        border-radius: 40px !important;
+        padding: 0.4rem 1.2rem !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    [data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
+        background-color: transparent !important;
+    }
+    
+    /* ========== INFO/SUCCESS/ERROR ALERTS ========== */
     div[data-testid="stAlert"] {
-        border: 1px solid color-mix(in srgb, var(--accent-gold) 28%, var(--text-color));
-        border-radius: 12px;
-        background: color-mix(in srgb, var(--secondary-background-color) 90%, transparent);
+        border-radius: 16px !important;
+        border: none !important;
+        backdrop-filter: blur(8px) !important;
+        animation: slideInLeft 0.3s ease-out !important;
     }
-
-    /* Tab switch: fade + slide animation */
-    @keyframes more_enhanced_time_calculator-tab-reveal {
-        from { opacity: 0; transform: translateX(14px); }
-        to   { opacity: 1; transform: translateX(0); }
+    
+    div[data-testid="stAlert"]:has(svg[data-testid="stAlertInfo"]) {
+        background: rgba(59, 130, 246, 0.15) !important;
+        border-left: 4px solid #3b82f6 !important;
     }
-
-    [data-testid="stTabs"] [role="tabpanel"],
-    [data-testid="stTabs"] [data-baseweb="tab-panel"] {
-        transition: opacity 0.28s ease, transform 0.28s ease;
+    
+    div[data-testid="stAlert"]:has(svg[data-testid="stAlertSuccess"]) {
+        background: rgba(16, 185, 129, 0.15) !important;
+        border-left: 4px solid #10b981 !important;
     }
-
-    [data-testid="stTabs"] [role="tabpanel"]:not([aria-hidden="true"]),
-    [data-testid="stTabs"] [data-baseweb="tab-panel"]:not([hidden]) {
-        animation: more_enhanced_time_calculator-tab-reveal 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    
+    div[data-testid="stAlert"]:has(svg[data-testid="stAlertError"]) {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border-left: 4px solid #ef4444 !important;
     }
-
-    .more_enhanced_time_calculator-hooray-banner {
-        background: linear-gradient(180deg, #1f6b3a 0%, #145a2e 100%);
-        color: #ffffff !important;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.35);
-        padding: 14px 18px;
-        border-radius: 12px;
-        border: 1px solid color-mix(in srgb, #34d399 55%, #14532d);
-        font-weight: 700;
-        font-size: 1.1rem;
-        text-align: center;
-        box-shadow: 0 10px 28px color-mix(in srgb, #22c55e 35%, transparent);
-        margin-top: 0.35rem;
-    }
-
-    .more_enhanced_time_calculator-hooray-banner,
-    .more_enhanced_time_calculator-hooray-banner p,
-    .more_enhanced_time_calculator-hooray-banner span {
-        color: #ffffff !important;
-    }
-
-    .more_enhanced_time_calculator-summary-box {
-        background: color-mix(in srgb, var(--secondary-background-color) 80%, transparent);
-        border: 1px solid color-mix(in srgb, var(--accent-gold) 22%, var(--text-color));
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin-top: 0.6rem;
-        line-height: 2.2;
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
-    .more_enhanced_time_calculator-summary-box *::selection {
-        background: transparent;
-    }
-
-    .more_enhanced_time_calculator-summary-box *::-moz-selection {
-        background: transparent;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        :root { --card-topline: var(--accent-gold-soft); }
-
-        .stApp {
-            background:
-                radial-gradient(circle at 14% -10%, rgba(148,137,121,0.10), transparent 34%),
-                radial-gradient(circle at 86% 0%, rgba(57,62,70,0.20), transparent 32%),
-                #1e2229;
-        }
-
-        div[data-testid="stMetric"] {
-            background: linear-gradient(180deg, #323840 0%, #272c34 100%);
-            border: 1px solid #424850;
-            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.50);
-        }
-
-        .stTextArea textarea {
-            background: #272c34;
-            border-color: #3a3f48;
-        }
-
-        .more_enhanced_time_calculator-hooray-banner {
-            background: linear-gradient(180deg, #166534 0%, #0f3d1f 100%);
-            border-color: #22c55e;
-            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.22);
-        }
-
-        .more_enhanced_time_calculator-summary-box {
-            background: #272c34;
-            border-color: #3a3f48;
-        }
-
-        .stButton > button,
-        .stButton > button p,
-        .stButton > button span,
-        .stButton > button div {
-            color: #000000 !important;
-            text-shadow: none !important;
-        }
-        .stApp .stButton > button {
-            color: #000000 !important;
-        }
-    }
-
-    /* ── Session panel ── */
-    .ee-session-panel {
+    
+    /* ========== SESSION PANEL ========== */
+    .session-panel {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 14px;
+        gap: 1rem;
+        margin-top: 1rem;
     }
-
-    .ee-session-col {
-        background: color-mix(in srgb, var(--secondary-background-color) 80%, transparent);
-        border: 1px solid color-mix(in srgb, var(--accent-gold) 20%, var(--text-color));
-        border-radius: 14px;
-        padding: 16px 18px 12px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .ee-session-col::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto 0;
-        height: 2px;
-    }
-
-    .ee-session-col.work::before {
-        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-    }
-
-    .ee-session-col.brk::before {
-        background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-    }
-
-    .ee-col-header {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-    }
-
-    .ee-col-header.work { color: #60a5fa; }
-    .ee-col-header.brk  { color: var(--accent-gold); }
-
-    .ee-col-count {
-        font-size: 0.68rem;
-        padding: 2px 7px;
+    
+    .session-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
         border-radius: 20px;
-        font-weight: 700;
-        letter-spacing: 0;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: slideInUp 0.4s ease-out;
     }
-
-    .ee-col-header.work .ee-col-count { background: rgba(59,130,246,0.18); color: #93c5fd; }
-    .ee-col-header.brk  .ee-col-count { background: rgba(212,175,114,0.18); color: var(--accent-gold); }
-
-    .ee-row {
+    
+    .session-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+    
+    .session-header {
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .session-header.work {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), transparent);
+        color: #818cf8;
+    }
+    
+    .session-header.break {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), transparent);
+        color: #f59e0b;
+    }
+    
+    .session-item {
         display: flex;
-        align-items: baseline;
         justify-content: space-between;
-        padding: 7px 0;
-        border-bottom: 1px solid color-mix(in srgb, var(--text-color) 8%, transparent);
-        gap: 8px;
-        font-size: 0.82rem;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.2s ease;
     }
-
-    .ee-row:last-child { border-bottom: none; }
-
-    .ee-row-label {
-        color: color-mix(in srgb, var(--text-color) 55%, transparent);
-        white-space: nowrap;
-        flex-shrink: 0;
-        font-size: 0.78rem;
+    
+    .session-item:hover {
+        background: var(--accent-glow);
     }
-
-    .ee-row-range {
-        color: color-mix(in srgb, var(--text-color) 80%, transparent);
+    
+    .session-item:last-child {
+        border-bottom: none;
+    }
+    
+    .session-time {
         font-size: 0.8rem;
-        text-align: center;
-        flex: 1;
+        color: var(--text-secondary);
     }
-
-    .ee-row-dur {
+    
+    .session-duration {
         font-weight: 700;
-        white-space: nowrap;
-        font-size: 0.84rem;
+        font-size: 0.85rem;
     }
-
-    .ee-row-dur.work { color: #60a5fa; }
-    .ee-row-dur.brk  { color: var(--accent-gold); }
-
-    .ee-ongoing-badge {
+    
+    .session-duration.work { color: #818cf8; }
+    .session-duration.break { color: #f59e0b; }
+    
+    .live-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
         font-size: 0.65rem;
-        background: rgba(34,197,94,0.18);
-        color: #4ade80;
-        border-radius: 10px;
-        padding: 1px 6px;
         font-weight: 700;
-        letter-spacing: 0.06em;
-        vertical-align: middle;
-        margin-left: 4px;
+        color: white;
+        margin-left: 0.5rem;
     }
-
-    @media (prefers-color-scheme: dark) {
-        .ee-session-col {
-            background: #272c34;
-            border-color: #3a3f48;
-        }
+    
+    /* ========== HOORAY BANNER ========== */
+    .hooray-banner {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 20px;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        animation: pulse-ring 2s infinite;
+        margin-top: 1rem;
+    }
+    
+    .hooray-banner p {
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* ========== SUMMARY BOX ========== */
+    .summary-box {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 1.25rem;
+        margin-top: 1rem;
+        line-height: 1.8;
+    }
+    
+    /* ========== CAPTION ========== */
+    .stCaption {
+        color: var(--text-muted) !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* ========== DIVIDER ========== */
+    hr {
+        margin: 1.5rem 0;
+        border-color: var(--border);
+    }
+    
+    /* ========== SCROLLBAR ========== */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-dark);
     }
     </style>
     """,
@@ -495,8 +581,8 @@ def render_logout_eligibility_status(
         st.info(f"🚀 You Need to Punch Out At :- **{at}**")
     else:
         st.markdown(
-            '<div class="more_enhanced_time_calculator-hooray-banner">'
-            "🎉 Target Completed! You’re Free to Go!!"
+            '<div class="hooray-banner">'
+            "<p>🎉 Target Completed! You’re Free to Go!! 🎉</p>"
             "</div>",
             unsafe_allow_html=True,
         )
@@ -512,11 +598,11 @@ def render_summary(result: dict) -> None:
 
     st.markdown(
         f"""
-        <div class="more_enhanced_time_calculator-summary-box">
-            🕐 &nbsp;<b>Work Time:</b> {format_human(total_work)}<br>
-            ☕ &nbsp;<b>Break Time:</b> {format_human(total_break)}
+        <div class="summary-box">
+            🕐 &nbsp;<strong>Work Time:</strong> {format_human(total_work)}<br>
+            ☕ &nbsp;<strong>Break Time:</strong> {format_human(total_break)}
             &nbsp;<span style="opacity:0.6;font-size:0.88em;">({break_label})</span><br>
-            📊 &nbsp;<b>Total Time in office:</b> {format_human(total_time)}
+            📊 &nbsp;<strong>Total Time in office:</strong> {format_human(total_time)}
         </div>
         """,
         unsafe_allow_html=True,
@@ -528,51 +614,43 @@ def render_session_panel(result: dict) -> None:
     work_data = result.get("work_sessions_data", [])
     break_data = result.get("break_sessions_data", [])
 
-    def work_rows_html() -> str:
+    def work_items_html() -> str:
         if not work_data:
-            return '<div class="ee-row"><span class="ee-row-label" style="opacity:0.45">No sessions yet</span></div>'
-        rows = []
-        for i, s in enumerate(work_data, 1):
-            ongoing_badge = '<span class="ee-ongoing-badge">LIVE</span>' if s.get("ongoing") else ""
-            rows.append(
-                f'<div class="ee-row">'
-                f'<span class="ee-row-label">Session {i}</span>'
-                f'<span class="ee-row-range">{s["start"]} → {s["end"]}{ongoing_badge}</span>'
-                f'<span class="ee-row-dur work">{s["human"]}</span>'
+            return '<div class="session-item"><span class="session-time">No sessions yet</span></div>'
+        items = []
+        for s in work_data:
+            ongoing = '<span class="live-badge">LIVE</span>' if s.get("ongoing") else ""
+            items.append(
+                f'<div class="session-item">'
+                f'<span class="session-time">{s["start"]} → {s["end"]}{ongoing}</span>'
+                f'<span class="session-duration work">{s["human"]}</span>'
                 f'</div>'
             )
-        return "".join(rows)
+        return "".join(items)
 
-    def break_rows_html() -> str:
+    def break_items_html() -> str:
         if not break_data:
-            return '<div class="ee-row"><span class="ee-row-label" style="opacity:0.45">No breaks yet</span></div>'
-        rows = []
-        for i, s in enumerate(break_data, 1):
-            rows.append(
-                f'<div class="ee-row">'
-                f'<span class="ee-row-label">Break {i}</span>'
-                f'<span class="ee-row-range">{s["start"]} → {s["end"]}</span>'
-                f'<span class="ee-row-dur brk">{s["human"]}</span>'
+            return '<div class="session-item"><span class="session-time">No breaks yet</span></div>'
+        items = []
+        for s in break_data:
+            items.append(
+                f'<div class="session-item">'
+                f'<span class="session-time">{s["start"]} → {s["end"]}</span>'
+                f'<span class="session-duration break">{s["human"]}</span>'
                 f'</div>'
             )
-        return "".join(rows)
+        return "".join(items)
 
     st.markdown(
         f"""
-        <div class="ee-session-panel">
-            <div class="ee-session-col work">
-                <div class="ee-col-header work">
-                    🕐 Work Sessions
-                    <span class="ee-col-count">{len(work_data)}</span>
-                </div>
-                {work_rows_html()}
+        <div class="session-panel">
+            <div class="session-card">
+                <div class="session-header work">🕐 Work Sessions · {len(work_data)}</div>
+                {work_items_html()}
             </div>
-            <div class="ee-session-col brk">
-                <div class="ee-col-header brk">
-                    ☕ Break Sessions
-                    <span class="ee-col-count">{len(break_data)}</span>
-                </div>
-                {break_rows_html()}
+            <div class="session-card">
+                <div class="session-header break">☕ Break Sessions · {len(break_data)}</div>
+                {break_items_html()}
             </div>
         </div>
         """,
@@ -794,9 +872,9 @@ def leader_live_dashboard() -> None:
 
 # ── Initialise session state ───────────────────────────────────────────────────
 
-if "_more_enhanced_time_calculator_cleared_caches" not in st.session_state:
+if "_chronos_cleared_caches" not in st.session_state:
     st.cache_data.clear()
-    st.session_state._more_enhanced_time_calculator_cleared_caches = True
+    st.session_state._chronos_cleared_caches = True
 
 if "member_day_type" not in st.session_state:
     mq = st.query_params.get(MEMBER_DAY_QUERY)
@@ -824,57 +902,23 @@ if "theme_mode" not in st.session_state:
 
 # ── Page layout ───────────────────────────────────────────────────────────────
 
-# Premium animated SVG clock icon with pulse animation
-CLOCK_SVG = """
-<svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+# Premium animated logo
+LOGO_SVG = """
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="faceGrad" cx="50%" cy="38%" r="55%">
-      <stop offset="0%" stop-color="#f5e6c8"/>
-      <stop offset="100%" stop-color="#c9a96e"/>
-    </radialGradient>
-    <radialGradient id="rimGrad" cx="50%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#e8c97a"/>
-      <stop offset="60%" stop-color="#b8892a"/>
-      <stop offset="100%" stop-color="#7a5510"/>
-    </radialGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#00000055"/>
-    </filter>
+    <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
   </defs>
-  <!-- Outer gold rim -->
-  <circle cx="29" cy="29" r="27" fill="url(#rimGrad)" filter="url(#shadow)"/>
-  <!-- Inner highlight ring -->
-  <circle cx="29" cy="29" r="23.5" fill="none" stroke="#f0d080" stroke-width="0.7" opacity="0.5"/>
-  <!-- Clock face -->
-  <circle cx="29" cy="29" r="22" fill="url(#faceGrad)"/>
-  <!-- Hour markers -->
-  <g stroke="#7a5510" stroke-width="1.5" stroke-linecap="round">
-    <line x1="29" y1="9"  x2="29" y2="12"/>
-    <line x1="29" y1="46" x2="29" y2="49"/>
-    <line x1="9"  y1="29" x2="12" y2="29"/>
-    <line x1="46" y1="29" x2="49" y2="29"/>
-  </g>
-  <!-- Minor tick marks -->
-  <g stroke="#b8892a" stroke-width="0.8" stroke-linecap="round" opacity="0.6">
-    <line x1="38.2" y1="10.5"  x2="36.9" y2="12.8"/>
-    <line x1="19.8" y1="10.5"  x2="21.1" y2="12.8"/>
-    <line x1="47.5" y1="19.8" x2="45.2" y2="21.1"/>
-    <line x1="47.5" y1="38.2" x2="45.2" y2="36.9"/>
-    <line x1="38.2" y1="47.5" x2="36.9" y2="45.2"/>
-    <line x1="19.8" y1="47.5" x2="21.1" y2="45.2"/>
-    <line x1="10.5" y1="38.2" x2="12.8" y2="36.9"/>
-    <line x1="10.5" y1="19.8" x2="12.8" y2="21.1"/>
-  </g>
-  <!-- Hour hand (pointing ~10) -->
-  <line x1="29" y1="29" x2="21" y2="17" stroke="#3b2a0e" stroke-width="2.4" stroke-linecap="round"/>
-  <!-- Minute hand (pointing ~2) -->
-  <line x1="29" y1="29" x2="38.5"   y2="18.5" stroke="#3b2a0e" stroke-width="1.6" stroke-linecap="round"/>
-  <!-- Second hand -->
-  <line x1="29" y1="29" x2="32.5"   y2="43" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
-  <!-- Center jewel -->
-  <circle cx="29" cy="29" r="2.2" fill="#7a5510"/>
-  <circle cx="29" cy="29" r="1.1" fill="#f0d080"/>
-  <animateTransform attributeName="transform" type="rotate" from="0 29 29" to="360 29 29" dur="60s" repeatCount="indefinite"/>
+  <circle cx="24" cy="24" r="22" fill="url(#logoGrad1)" opacity="0.15"/>
+  <circle cx="24" cy="24" r="18" stroke="url(#logoGrad1)" stroke-width="2" fill="none"/>
+  <circle cx="24" cy="24" r="12" fill="url(#logoGrad2)" opacity="0.8"/>
+  <text x="24" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="800" font-family="Arial">C</text>
 </svg>
 """
 
@@ -882,260 +926,18 @@ CLOCK_SVG = """
 _tm = st.session_state.theme_mode
 _is_dark = _tm == "dark"
 
-# ── Animated botanical SVG wallpaper patterns ─────────────────────────────────
-# Dark: deep indigo/violet leaves with subtle floating animation
-# Light: soft sage/mint botanical illustration with gentle movement
-DARK_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22800%22%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22800%22%20fill%3D%22%231e2229%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%233a3428%7D.lb%7Bfill%3A%232e2a22%7D.lc%7Bfill%3A%2346403a%7D.v%7Bstroke%3A%236b5f48%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.55%7D.v2%7Bstroke%3A%238a7a60%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.35%7D%0A@keyframes%20drift%20%7B0%25%7Btransform%3Atranslate(0%2C0)%7D100%25%7Btransform%3Atranslate(30px%2C20px)%7D%7D%0A.g1%7Banimation%3Adrift%2020s%20ease-in-out%20infinite%20alternate%3B%7D%0A.g2%7Banimation%3Adrift%2025s%20ease-in-out%20infinite%20alternate-reverse%3B%7D%0A.g3%7Banimation%3Adrift%2018s%20ease-in-out%20infinite%20alternate%3B%7D%3C%2Fstyle%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(120%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(480%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(295%2C440)%20rotate(-8)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.80%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(720%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(-120%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(300%2C728)%20rotate(10)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
-
-LIGHT_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22800%22%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22800%22%20fill%3D%22%23eef7f2%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%236abf8a%7D.lb%7Bfill%3A%2386c9a0%7D.lc%7Bfill%3A%234caf78%7D.v%7Bstroke%3A%232d8a58%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.38%7D.v2%7Bstroke%3A%233aaa6a%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.26%7D%0A@keyframes%20drift%20%7B0%25%7Btransform%3Atranslate(0%2C0)%7D100%25%7Btransform%3Atranslate(20px%2C15px)%7D%7D%0A.g1%7Banimation%3Adrift%2022s%20ease-in-out%20infinite%20alternate%3B%7D%0A.g2%7Banimation%3Adrift%2028s%20ease-in-out%20infinite%20alternate-reverse%3B%7D%0A.g3%7Banimation%3Adrift%2019s%20ease-in-out%20infinite%20alternate%3B%7D%3C%2Fstyle%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(120%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(480%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(295%2C440)%20rotate(-8)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(720%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(-120%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(300%2C728)%20rotate(10)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
-
-# Complete theme CSS with animations
-THEME_CSS = f"""
-<style>
-/* ── Global animations ─────────────────────────────────────────── */
-@keyframes fadeInUp {{
-    from {{ opacity: 0; transform: translateY(20px); }}
-    to {{ opacity: 1; transform: translateY(0); }}
-}}
-
-@keyframes glowPulse {{
-    0% {{ box-shadow: 0 0 0 0 rgba(212,175,114,0.4); }}
-    70% {{ box-shadow: 0 0 0 10px rgba(212,175,114,0); }}
-    100% {{ box-shadow: 0 0 0 0 rgba(212,175,114,0); }}
-}}
-
-@keyframes metricPop {{
-    0% {{ transform: scale(0.95); opacity: 0; }}
-    80% {{ transform: scale(1.02); }}
-    100% {{ transform: scale(1); opacity: 1; }}
-}}
-
-/* ── Wallpaper background with parallax effect ──────────────────── */
-.stApp {{
-    background-image: {DARK_BG_SVG if _is_dark else LIGHT_BG_SVG} !important;
-    background-size: 800px 800px !important;
-    background-repeat: repeat !important;
-    background-attachment: fixed !important;
-    transition: background-image 0.5s ease !important;
-}}
-
-/* Frosted overlay with blur */
-.stApp::before {{
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: {"rgba(20,22,28,0.65)" if _is_dark else "rgba(238,247,242,0.72)"};
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    pointer-events: none;
-    z-index: 0;
-    transition: background 0.3s ease;
-}}
-
-.block-container {{
-    position: relative;
-    z-index: 1;
-    animation: fadeInUp 0.6s ease-out;
-}}
-
-/* ── Typography with subtle glow ────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {{
-    color: {"#f5ebd6" if _is_dark else "#0f2a1a"} !important;
-    text-shadow: {"0 2px 12px rgba(212,175,114,0.25)" if _is_dark else "0 1px 4px rgba(100,140,80,0.15)"} !important;
-    letter-spacing: -0.02em;
-}}
-
-h1 {{
-    background: linear-gradient(135deg, {"#f5e6c8" if _is_dark else "#1a4a2a"}, {"#d4af72" if _is_dark else "#3a8a5a"});
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent !important;
-    text-shadow: none;
-}}
-
-/* ── Animated Metric Cards ─────────────────────────────────────── */
-div[data-testid="stMetric"] {{
-    animation: metricPop 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
-    background: {"linear-gradient(135deg,rgba(57,62,70,0.92) 0%,rgba(38,43,52,0.96) 100%)" if _is_dark else "linear-gradient(135deg,rgba(255,255,255,0.85) 0%,rgba(230,250,238,0.92) 100%)"} !important;
-    border: {"1px solid rgba(212,175,114,0.35)" if _is_dark else "1px solid rgba(80,170,110,0.5)"} !important;
-    border-radius: 20px !important;
-    backdrop-filter: blur(12px) !important;
-}}
-
-div[data-testid="stMetric"]:hover {{
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: {"0 20px 40px rgba(0,0,0,0.5)" if _is_dark else "0 20px 40px rgba(60,140,80,0.2)"} !important;
-    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-}}
-
-div[data-testid="stMetricValue"] > div {{
-    font-size: 1.8rem !important;
-    background: linear-gradient(135deg, {"#f5e6c8" if _is_dark else "#1a4a2a"}, {"#d4af72" if _is_dark else "#3a8a5a"});
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent !important;
-}}
-
-/* ── Text Areas with focus animation ───────────────────────────── */
-.stTextArea textarea {{
-    transition: all 0.3s ease !important;
-    background: {"rgba(38,43,52,0.92)" if _is_dark else "rgba(240,252,245,0.9)"} !important;
-    border-radius: 16px !important;
-    font-family: 'JetBrains Mono', monospace !important;
-}}
-
-.stTextArea textarea:focus {{
-    transform: scale(1.01);
-    border-color: var(--accent-gold) !important;
-    box-shadow: 0 0 0 3px rgba(212,175,114,0.3) !important;
-}}
-
-/* ── Buttons with ripple effect ────────────────────────────────── */
-.stButton > button {{
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1) !important;
-    border-radius: 40px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.03em;
-}}
-
-.stButton > button::after {{
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s, height 0.4s;
-}}
-
-.stButton > button:active::after {{
-    width: 200px;
-    height: 200px;
-    opacity: 0;
-}}
-
-.stButton > button:hover {{
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(212,175,114,0.35) !important;
-}}
-
-/* ── Tabs with elegant animation ───────────────────────────────── */
-[data-testid="stTabs"] [role="tablist"] {{
-    gap: 8px !important;
-    background: transparent !important;
-}}
-
-[data-testid="stTabs"] [role="tab"] {{
-    transition: all 0.25s ease !important;
-    border-radius: 40px !important;
-    padding: 0.6rem 1.8rem !important;
-    font-weight: 600 !important;
-    backdrop-filter: blur(8px);
-}}
-
-[data-testid="stTabs"] [role="tab"]:hover {{
-    transform: translateY(-2px);
-    background: {"rgba(212,175,114,0.12)" if _is_dark else "rgba(80,170,110,0.1)"} !important;
-}}
-
-[data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
-    background: {"linear-gradient(135deg,rgba(212,175,114,0.2),rgba(212,175,114,0.05))" if _is_dark else "linear-gradient(135deg,rgba(80,170,110,0.15),rgba(80,170,110,0.05))"} !important;
-    border-bottom: none !important;
-    box-shadow: {"0 4px 15px rgba(212,175,114,0.2)" if _is_dark else "0 4px 15px rgba(80,170,110,0.15)"} !important;
-}}
-
-/* ── Session panel with slide-in animation ─────────────────────── */
-.ee-session-col {{
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(12px) !important;
-    border-radius: 20px !important;
-}}
-
-.ee-session-col:hover {{
-    transform: translateY(-3px);
-    box-shadow: {"0 15px 35px rgba(0,0,0,0.3)" if _is_dark else "0 15px 35px rgba(80,170,110,0.15)"} !important;
-}}
-
-.ee-row {{
-    transition: all 0.2s ease !important;
-}}
-
-.ee-row:hover {{
-    background: {"rgba(212,175,114,0.08)" if _is_dark else "rgba(80,170,110,0.06)"};
-    border-radius: 8px;
-    padding-left: 8px;
-}}
-
-/* ── Hooray banner with bounce animation ───────────────────────── */
-@keyframes gentleBounce {{
-    0%, 100% {{ transform: translateY(0); }}
-    50% {{ transform: translateY(-5px); }}
-}}
-
-.more_enhanced_time_calculator-hooray-banner {{
-    animation: gentleBounce 0.6s ease-out, glowPulse 2s infinite;
-    backdrop-filter: blur(12px);
-    background: linear-gradient(135deg, #1f6b3a, #0f4a2a) !important;
-}}
-
-/* ── Info alerts with slide-in ─────────────────────────────────── */
-div[data-testid="stAlert"] {{
-    animation: fadeInUp 0.4s ease-out;
-    backdrop-filter: blur(12px);
-    border-radius: 16px !important;
-}}
-
-/* ── Clock icon pulse animation ────────────────────────────────── */
-@keyframes clockPulse {{
-    0% {{ transform: scale(1); opacity: 1; }}
-    50% {{ transform: scale(1.05); opacity: 0.9; }}
-    100% {{ transform: scale(1); opacity: 1; }}
-}}
-
-/* ── Custom scrollbar ──────────────────────────────────────────── */
-::-webkit-scrollbar {{
-    width: 8px;
-    height: 8px;
-}}
-
-::-webkit-scrollbar-track {{
-    background: {"rgba(57,62,70,0.5)" if _is_dark else "rgba(200,220,210,0.5)"};
-    border-radius: 10px;
-}}
-
-::-webkit-scrollbar-thumb {{
-    background: {"#d4af72" if _is_dark else "#3a8a5a"};
-    border-radius: 10px;
-    transition: background 0.2s;
-}}
-
-::-webkit-scrollbar-thumb:hover {{
-    background: {"#e8c87a" if _is_dark else "#2a6a4a"};
-}}
-
-/* ── Loading spinner animation ─────────────────────────────────── */
-@keyframes spin {{
-    to {{ transform: rotate(360deg); }}
-}}
-
-.stSpinner > div {{
-    animation: spin 1s linear infinite !important;
-    border-top-color: var(--accent-gold) !important;
-}}
-
-/* ── Smooth transitions for all interactive elements ───────────── */
-button, div[data-testid="stMetric"], .stTextArea textarea, [role="tab"] {{
-    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
-}}
-</style>
-"""
-st.markdown(THEME_CSS, unsafe_allow_html=True)
+# Inject theme attribute on body
+st.markdown(
+    f"""
+    <script>
+        document.body.setAttribute('data-theme', '{"dark" if _is_dark else "light"}');
+    </script>
+    <style>
+        body {{ background: var(--bg-primary); }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Scroll to top on every page load/refresh
 st.markdown(
@@ -1159,79 +961,14 @@ st.markdown(
 hdr_icon, hdr_title, hdr_spacer, hdr_toggle = st.columns([1, 9, 2, 2], vertical_alignment="center")
 
 with hdr_icon:
-    st.markdown(CLOCK_SVG, unsafe_allow_html=True)
+    st.markdown(LOGO_SVG, unsafe_allow_html=True)
 
 with hdr_title:
-    st.title("More Enhanced Time Calculator")
+    st.title("Chronos")
 
 with hdr_toggle:
-    toggle_label = "☀️  Light" if _is_dark else "🌙  Dark"
-    st.markdown(
-        f"""
-        <style>
-        @keyframes ee-toggle-pulse {{
-            0%   {{ box-shadow: {"0 0 0 0 rgba(212,175,114,0.35)" if _is_dark else "0 0 0 0 rgba(180,140,60,0.28)"}; }}
-            70%  {{ box-shadow: {"0 0 0 7px rgba(212,175,114,0)" if _is_dark else "0 0 0 7px rgba(180,140,60,0)"}; }}
-            100% {{ box-shadow: {"0 0 0 0 rgba(212,175,114,0)" if _is_dark else "0 0 0 0 rgba(180,140,60,0)"}; }}
-        }}
-
-        div[data-testid="column"]:last-child .stButton > button {{
-            background: {"linear-gradient(145deg,#2a2318 0%,#1a1610 50%,#221d14 100%)" if _is_dark else "linear-gradient(145deg,#fffdf5 0%,#f7e8c0 50%,#f0d898 100%)"} !important;
-            color: {"#d4af72" if _is_dark else "#6b4a0e"} !important;
-            border: {"1px solid rgba(212,175,114,0.35)" if _is_dark else "1px solid rgba(180,130,40,0.45)"} !important;
-            border-radius: 40px !important;
-            font-size: 0.78rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.08em !important;
-            text-transform: uppercase !important;
-            padding: 0.45rem 1.3rem !important;
-            min-height: 2.4rem !important;
-            position: relative !important;
-            overflow: hidden !important;
-            box-shadow: {
-                "0 2px 8px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,175,114,0.18), inset 0 -1px 0 rgba(0,0,0,0.3)"
-                if _is_dark else
-                "0 2px 8px rgba(160,120,40,0.22), 0 1px 2px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(160,120,40,0.15)"
-            } !important;
-            transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
-            backdrop-filter: blur(8px) !important;
-        }}
-
-        div[data-testid="column"]:last-child .stButton > button::after {{
-            content: "" !important;
-            position: absolute !important;
-            inset: 0 !important;
-            background: {"linear-gradient(180deg,rgba(212,175,114,0.08) 0%,transparent 60%)" if _is_dark else "linear-gradient(180deg,rgba(255,255,255,0.55) 0%,transparent 60%)"} !important;
-            border-radius: inherit !important;
-            pointer-events: none !important;
-        }}
-
-        div[data-testid="column"]:last-child .stButton > button:hover {{
-            background: {"linear-gradient(145deg,#342b1e 0%,#241e14 50%,#2c2518 100%)" if _is_dark else "linear-gradient(145deg,#fff9e8 0%,#f5e0a8 50%,#edcf80 100%)"} !important;
-            color: {"#e8c87a" if _is_dark else "#5a3c08"} !important;
-            border-color: {"rgba(232,200,122,0.55)" if _is_dark else "rgba(160,110,20,0.6)"} !important;
-            transform: translateY(-2px) scale(1.03) !important;
-            box-shadow: {
-                "0 6px 20px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(232,200,122,0.25), 0 0 12px rgba(212,175,114,0.18)"
-                if _is_dark else
-                "0 6px 18px rgba(160,120,40,0.3), 0 2px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.95), 0 0 12px rgba(200,160,60,0.2)"
-            } !important;
-        }}
-
-        div[data-testid="column"]:last-child .stButton > button:active {{
-            transform: translateY(0px) scale(0.98) !important;
-            transition: all 0.08s ease !important;
-            box-shadow: {
-                "0 1px 4px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.3)"
-                if _is_dark else
-                "0 1px 4px rgba(160,120,40,0.2), inset 0 2px 4px rgba(160,120,40,0.1)"
-            } !important;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-    if st.button(toggle_label, key="btn_theme_toggle"):
+    toggle_label = "☀️ Light" if _is_dark else "🌙 Dark"
+    if st.button(toggle_label, key="btn_theme_toggle", use_container_width=True):
         st.session_state.theme_mode = "light" if _is_dark else "dark"
         st.rerun()
 
@@ -1241,7 +978,7 @@ st.caption(
 )
 st.caption(f"Pune time (IST): {now_pune().strftime('%d-%b-%Y %I:%M:%S %p')}")
 
-st.markdown("**Biometric log**")
+st.markdown("**Biometric Log**")
 tab_member_in, tab_leader_in = st.tabs(["👤  Team Member", "👑  Team Leader"])
 
 with tab_member_in:
@@ -1272,7 +1009,7 @@ with tab_member_in:
         else:
             st.session_state.member_biometric_points = list(parsed)
 
-    st.markdown("**Live preview**")
+    st.markdown("**Live Preview**")
     member_live_dashboard()
 
 with tab_leader_in:
@@ -1303,7 +1040,7 @@ with tab_leader_in:
         else:
             st.session_state.leader_biometric_points = list(parsed)
 
-    st.markdown("**Live preview**")
+    st.markdown("**Live Preview**")
     leader_live_dashboard()
 
 st.markdown("---")
