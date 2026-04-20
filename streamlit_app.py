@@ -24,7 +24,7 @@ def now_pune() -> dt.datetime:
 
 
 st.set_page_config(
-    page_title="EntryExit Insight",
+    page_title="More Enhanced Time Calculator",
     page_icon=PAGE_ICON,
     layout="wide",
 )
@@ -185,7 +185,7 @@ st.markdown(
     }
 
     /* Tab switch: fade + slide animation */
-    @keyframes entryexit-tab-reveal {
+    @keyframes more_enhanced_time_calculator-tab-reveal {
         from { opacity: 0; transform: translateX(14px); }
         to   { opacity: 1; transform: translateX(0); }
     }
@@ -197,10 +197,10 @@ st.markdown(
 
     [data-testid="stTabs"] [role="tabpanel"]:not([aria-hidden="true"]),
     [data-testid="stTabs"] [data-baseweb="tab-panel"]:not([hidden]) {
-        animation: entryexit-tab-reveal 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation: more_enhanced_time_calculator-tab-reveal 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
-    .entryexit-hooray-banner {
+    .more_enhanced_time_calculator-hooray-banner {
         background: linear-gradient(180deg, #1f6b3a 0%, #145a2e 100%);
         color: #ffffff !important;
         text-shadow: 0 1px 3px rgba(0,0,0,0.35);
@@ -214,13 +214,13 @@ st.markdown(
         margin-top: 0.35rem;
     }
 
-    .entryexit-hooray-banner,
-    .entryexit-hooray-banner p,
-    .entryexit-hooray-banner span {
+    .more_enhanced_time_calculator-hooray-banner,
+    .more_enhanced_time_calculator-hooray-banner p,
+    .more_enhanced_time_calculator-hooray-banner span {
         color: #ffffff !important;
     }
 
-    .entryexit-summary-box {
+    .more_enhanced_time_calculator-summary-box {
         background: color-mix(in srgb, var(--secondary-background-color) 80%, transparent);
         border: 1px solid color-mix(in srgb, var(--accent-gold) 22%, var(--text-color));
         border-radius: 14px;
@@ -231,11 +231,11 @@ st.markdown(
         -webkit-user-select: none;
     }
 
-    .entryexit-summary-box *::selection {
+    .more_enhanced_time_calculator-summary-box *::selection {
         background: transparent;
     }
 
-    .entryexit-summary-box *::-moz-selection {
+    .more_enhanced_time_calculator-summary-box *::-moz-selection {
         background: transparent;
     }
 
@@ -260,13 +260,13 @@ st.markdown(
             border-color: #3a3f48;
         }
 
-        .entryexit-hooray-banner {
+        .more_enhanced_time_calculator-hooray-banner {
             background: linear-gradient(180deg, #166534 0%, #0f3d1f 100%);
             border-color: #22c55e;
             box-shadow: 0 12px 32px rgba(34, 197, 94, 0.22);
         }
 
-        .entryexit-summary-box {
+        .more_enhanced_time_calculator-summary-box {
             background: #272c34;
             border-color: #3a3f48;
         }
@@ -495,7 +495,7 @@ def render_logout_eligibility_status(
         st.info(f"🚀 You Need to Punch Out At :- **{at}**")
     else:
         st.markdown(
-            '<div class="entryexit-hooray-banner">'
+            '<div class="more_enhanced_time_calculator-hooray-banner">'
             "🎉 Target Completed! You’re Free to Go!!"
             "</div>",
             unsafe_allow_html=True,
@@ -512,7 +512,7 @@ def render_summary(result: dict) -> None:
 
     st.markdown(
         f"""
-        <div class="entryexit-summary-box">
+        <div class="more_enhanced_time_calculator-summary-box">
             🕐 &nbsp;<b>Work Time:</b> {format_human(total_work)}<br>
             ☕ &nbsp;<b>Break Time:</b> {format_human(total_break)}
             &nbsp;<span style="opacity:0.6;font-size:0.88em;">({break_label})</span><br>
@@ -794,9 +794,9 @@ def leader_live_dashboard() -> None:
 
 # ── Initialise session state ───────────────────────────────────────────────────
 
-if "_entryexit_cleared_caches" not in st.session_state:
+if "_more_enhanced_time_calculator_cleared_caches" not in st.session_state:
     st.cache_data.clear()
-    st.session_state._entryexit_cleared_caches = True
+    st.session_state._more_enhanced_time_calculator_cleared_caches = True
 
 if "member_day_type" not in st.session_state:
     mq = st.query_params.get(MEMBER_DAY_QUERY)
@@ -824,9 +824,9 @@ if "theme_mode" not in st.session_state:
 
 # ── Page layout ───────────────────────────────────────────────────────────────
 
-# Premium inline SVG clock icon (no external file dependency)
+# Premium animated SVG clock icon with pulse animation
 CLOCK_SVG = """
-<svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="faceGrad" cx="50%" cy="38%" r="55%">
       <stop offset="0%" stop-color="#f5e6c8"/>
@@ -842,38 +842,39 @@ CLOCK_SVG = """
     </filter>
   </defs>
   <!-- Outer gold rim -->
-  <circle cx="27" cy="27" r="26" fill="url(#rimGrad)" filter="url(#shadow)"/>
+  <circle cx="29" cy="29" r="27" fill="url(#rimGrad)" filter="url(#shadow)"/>
   <!-- Inner highlight ring -->
-  <circle cx="27" cy="27" r="22.5" fill="none" stroke="#f0d080" stroke-width="0.7" opacity="0.5"/>
+  <circle cx="29" cy="29" r="23.5" fill="none" stroke="#f0d080" stroke-width="0.7" opacity="0.5"/>
   <!-- Clock face -->
-  <circle cx="27" cy="27" r="21" fill="url(#faceGrad)"/>
+  <circle cx="29" cy="29" r="22" fill="url(#faceGrad)"/>
   <!-- Hour markers -->
   <g stroke="#7a5510" stroke-width="1.5" stroke-linecap="round">
-    <line x1="27" y1="8"  x2="27" y2="11"/>
-    <line x1="27" y1="43" x2="27" y2="46"/>
-    <line x1="8"  y1="27" x2="11" y2="27"/>
-    <line x1="43" y1="27" x2="46" y2="27"/>
+    <line x1="29" y1="9"  x2="29" y2="12"/>
+    <line x1="29" y1="46" x2="29" y2="49"/>
+    <line x1="9"  y1="29" x2="12" y2="29"/>
+    <line x1="46" y1="29" x2="49" y2="29"/>
   </g>
   <!-- Minor tick marks -->
   <g stroke="#b8892a" stroke-width="0.8" stroke-linecap="round" opacity="0.6">
-    <line x1="35.5" y1="9.6"  x2="34.2" y2="11.9"/>
-    <line x1="18.5" y1="9.6"  x2="19.8" y2="11.9"/>
-    <line x1="44.4" y1="18.5" x2="42.1" y2="19.8"/>
-    <line x1="44.4" y1="35.5" x2="42.1" y2="34.2"/>
-    <line x1="35.5" y1="44.4" x2="34.2" y2="42.1"/>
-    <line x1="18.5" y1="44.4" x2="19.8" y2="42.1"/>
-    <line x1="9.6"  y1="35.5" x2="11.9" y2="34.2"/>
-    <line x1="9.6"  y1="18.5" x2="11.9" y2="19.8"/>
+    <line x1="38.2" y1="10.5"  x2="36.9" y2="12.8"/>
+    <line x1="19.8" y1="10.5"  x2="21.1" y2="12.8"/>
+    <line x1="47.5" y1="19.8" x2="45.2" y2="21.1"/>
+    <line x1="47.5" y1="38.2" x2="45.2" y2="36.9"/>
+    <line x1="38.2" y1="47.5" x2="36.9" y2="45.2"/>
+    <line x1="19.8" y1="47.5" x2="21.1" y2="45.2"/>
+    <line x1="10.5" y1="38.2" x2="12.8" y2="36.9"/>
+    <line x1="10.5" y1="19.8" x2="12.8" y2="21.1"/>
   </g>
   <!-- Hour hand (pointing ~10) -->
-  <line x1="27" y1="27" x2="19.5" y2="16" stroke="#3b2a0e" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="29" y1="29" x2="21" y2="17" stroke="#3b2a0e" stroke-width="2.4" stroke-linecap="round"/>
   <!-- Minute hand (pointing ~2) -->
-  <line x1="27" y1="27" x2="36"   y2="17" stroke="#3b2a0e" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="29" y1="29" x2="38.5"   y2="18.5" stroke="#3b2a0e" stroke-width="1.6" stroke-linecap="round"/>
   <!-- Second hand -->
-  <line x1="27" y1="27" x2="30"   y2="40" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+  <line x1="29" y1="29" x2="32.5"   y2="43" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
   <!-- Center jewel -->
-  <circle cx="27" cy="27" r="2.2" fill="#7a5510"/>
-  <circle cx="27" cy="27" r="1.1" fill="#f0d080"/>
+  <circle cx="29" cy="29" r="2.2" fill="#7a5510"/>
+  <circle cx="29" cy="29" r="1.1" fill="#f0d080"/>
+  <animateTransform attributeName="transform" type="rotate" from="0 29 29" to="360 29 29" dur="60s" repeatCount="indefinite"/>
 </svg>
 """
 
@@ -881,208 +882,256 @@ CLOCK_SVG = """
 _tm = st.session_state.theme_mode
 _is_dark = _tm == "dark"
 
-# ── Botanical SVG wallpaper patterns ─────────────────────────────────────────
-# Dark: deep indigo/violet leaves (like the reference image)
-# Light: soft sage/mint botanical illustration
-DARK_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22600%22%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22%231e2229%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%233a3428%7D.lb%7Bfill%3A%232e2a22%7D.lc%7Bfill%3A%2346403a%7D.v%7Bstroke%3A%236b5f48%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.55%7D.v2%7Bstroke%3A%238a7a60%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.35%7D%3C%2Fstyle%3E%0A%3Cg%20transform%3D%22translate%28120%2C170%29%20rotate%28-42%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20fill%3D%22none%22%20stroke%3D%22%235a5040%22%20stroke-width%3D%220.6%22%20opacity%3D%220.5%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M40%2C-35%20C46%2C-44%2055%2C-52%2064%2C-57%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M15%2C-12%20C20%2C-24%2028%2C-36%2038%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%2882%2C128%29%20rotate%28-20%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C8%2C-40%2038%2C-68%2060%2C-70%20C76%2C-71%2088%2C-58%2080%2C-32%20C70%2C-5%2035%2C14%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.70%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-34%2050%2C-55%2080%2C-32%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M18%2C-14%20C25%2C-28%2038%2C-42%2055%2C-50%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28148%2C230%29%20rotate%28-58%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-48%2045%2C-76%2068%2C-78%20C88%2C-80%20100%2C-65%2090%2C-38%20C78%2C-8%2042%2C20%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.75%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C25%2C-40%2058%2C-62%2090%2C-38%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M22%2C-20%20C30%2C-34%2045%2C-50%2062%2C-60%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M12%2C-10%20C16%2C-22%2024%2C-34%2036%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28480%2C195%29%20rotate%2838%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-38%2C-36%20C-44%2C-46%20-54%2C-56%20-64%2C-62%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-12%2C-10%20C-18%2C-24%20-28%2C-36%20-40%2C-44%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28510%2C255%29%20rotate%2854%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-38%20-40%2C-64%20-60%2C-66%20C-76%2C-68%20-86%2C-54%20-78%2C-30%20C-68%2C-4%20-36%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.65%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-32%20-50%2C-52%20-78%2C-30%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-18%2C-14%20C-26%2C-26%20-40%2C-40%20-55%2C-48%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28448%2C145%29%20rotate%2822%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-6%2C-34%20-36%2C-58%20-54%2C-60%20C-68%2C-62%20-78%2C-50%20-70%2C-28%20C-60%2C-4%20-30%2C14%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.60%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-18%2C-28%20-44%2C-48%20-70%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28295%2C440%29%20rotate%28-8%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.80%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-48%2C-44%20C-56%2C-54%20-66%2C-64%20-76%2C-70%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-15%2C-14%20C-20%2C-28%20-30%2C-44%20-44%2C-54%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28340%2C492%29%20rotate%2818%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-50%2046%2C-78%2068%2C-80%20C86%2C-82%20100%2C-66%2088%2C-38%20C76%2C-8%2040%2C22%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C22%2C-42%2058%2C-64%2088%2C-38%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C28%2C-34%2044%2C-52%2062%2C-62%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M10%2C-10%20C14%2C-22%2022%2C-34%2034%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28238%2C488%29%20rotate%28-32%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-44%20-44%2C-72%20-64%2C-74%20C-80%2C-76%20-92%2C-62%20-82%2C-36%20C-70%2C-8%20-38%2C18%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.68%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-36%20-54%2C-58%20-82%2C-36%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-16%20C-28%2C-30%20-42%2C-46%20-58%2C-55%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28300%2C128%29%20rotate%2810%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-24%2C-20%20C-34%2C-38%20-52%2C-56%20-70%2C-66%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-14%2C-12%20C-20%2C-26%20-30%2C-40%20-44%2C-50%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28258%2C90%29%20rotate%28-14%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-36%20-40%2C-62%20-60%2C-64%20C-76%2C-66%20-86%2C-52%20-76%2C-28%20C-66%2C-4%20-34%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.58%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-30%20-48%2C-50%20-76%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28348%2C98%29%20rotate%2826%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-38%2042%2C-64%2062%2C-66%20C78%2C-68%2088%2C-54%2080%2C-30%20C70%2C-5%2036%2C16%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.56%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-32%2050%2C-52%2080%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28720%2C170%29%20rotate%28-42%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28682%2C128%29%20rotate%28-20%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C8%2C-40%2038%2C-68%2060%2C-70%20C76%2C-71%2088%2C-58%2080%2C-32%20C70%2C-5%2035%2C14%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.70%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-34%2050%2C-55%2080%2C-32%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28748%2C230%29%20rotate%28-58%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-48%2045%2C-76%2068%2C-78%20C88%2C-80%20100%2C-65%2090%2C-38%20C78%2C-8%2042%2C20%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.75%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C25%2C-40%2058%2C-62%2090%2C-38%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28-120%2C195%29%20rotate%2838%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28-90%2C255%29%20rotate%2854%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-38%20-40%2C-64%20-60%2C-66%20C-76%2C-68%20-86%2C-54%20-78%2C-30%20C-68%2C-4%20-36%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.65%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-32%20-50%2C-52%20-78%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28295%2C-160%29%20rotate%28-8%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.80%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28340%2C-108%29%20rotate%2818%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-50%2046%2C-78%2068%2C-80%20C86%2C-82%20100%2C-66%2088%2C-38%20C76%2C-8%2040%2C22%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C22%2C-42%2058%2C-64%2088%2C-38%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28300%2C728%29%20rotate%2810%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-24%2C-20%20C-34%2C-38%20-52%2C-56%20-70%2C-66%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28258%2C690%29%20rotate%28-14%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-36%20-40%2C-62%20-60%2C-64%20C-76%2C-66%20-86%2C-52%20-76%2C-28%20C-66%2C-4%20-34%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.58%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-30%20-48%2C-50%20-76%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28348%2C698%29%20rotate%2826%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-38%2042%2C-64%2062%2C-66%20C78%2C-68%2088%2C-54%2080%2C-30%20C70%2C-5%2036%2C16%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.56%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-32%2050%2C-52%2080%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
+# ── Animated botanical SVG wallpaper patterns ─────────────────────────────────
+# Dark: deep indigo/violet leaves with subtle floating animation
+# Light: soft sage/mint botanical illustration with gentle movement
+DARK_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22800%22%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22800%22%20fill%3D%22%231e2229%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%233a3428%7D.lb%7Bfill%3A%232e2a22%7D.lc%7Bfill%3A%2346403a%7D.v%7Bstroke%3A%236b5f48%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.55%7D.v2%7Bstroke%3A%238a7a60%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.35%7D%0A@keyframes%20drift%20%7B0%25%7Btransform%3Atranslate(0%2C0)%7D100%25%7Btransform%3Atranslate(30px%2C20px)%7D%7D%0A.g1%7Banimation%3Adrift%2020s%20ease-in-out%20infinite%20alternate%3B%7D%0A.g2%7Banimation%3Adrift%2025s%20ease-in-out%20infinite%20alternate-reverse%3B%7D%0A.g3%7Banimation%3Adrift%2018s%20ease-in-out%20infinite%20alternate%3B%7D%3C%2Fstyle%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(120%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(480%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(295%2C440)%20rotate(-8)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.80%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(720%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.82%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(-120%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.78%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(300%2C728)%20rotate(10)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.72%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
 
-LIGHT_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22600%22%3E%0A%3Crect%20width%3D%22600%22%20height%3D%22600%22%20fill%3D%22%23eef7f2%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%236abf8a%7D.lb%7Bfill%3A%2386c9a0%7D.lc%7Bfill%3A%234caf78%7D.v%7Bstroke%3A%232d8a58%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.38%7D.v2%7Bstroke%3A%233aaa6a%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.26%7D%3C%2Fstyle%3E%0A%3Cg%20transform%3D%22translate%28120%2C170%29%20rotate%28-42%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20fill%3D%22none%22%20stroke%3D%22%233a9060%22%20stroke-width%3D%220.6%22%20opacity%3D%220.26%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M40%2C-35%20C46%2C-44%2055%2C-52%2064%2C-57%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M15%2C-12%20C20%2C-24%2028%2C-36%2038%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%2882%2C128%29%20rotate%28-20%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C8%2C-40%2038%2C-68%2060%2C-70%20C76%2C-71%2088%2C-58%2080%2C-32%20C70%2C-5%2035%2C14%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.36%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-34%2050%2C-55%2080%2C-32%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M18%2C-14%20C25%2C-28%2038%2C-42%2055%2C-50%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28148%2C230%29%20rotate%28-58%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-48%2045%2C-76%2068%2C-78%20C88%2C-80%20100%2C-65%2090%2C-38%20C78%2C-8%2042%2C20%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.39%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C25%2C-40%2058%2C-62%2090%2C-38%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M22%2C-20%20C30%2C-34%2045%2C-50%2062%2C-60%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M12%2C-10%20C16%2C-22%2024%2C-34%2036%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28480%2C195%29%20rotate%2838%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-38%2C-36%20C-44%2C-46%20-54%2C-56%20-64%2C-62%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-12%2C-10%20C-18%2C-24%20-28%2C-36%20-40%2C-44%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28510%2C255%29%20rotate%2854%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-38%20-40%2C-64%20-60%2C-66%20C-76%2C-68%20-86%2C-54%20-78%2C-30%20C-68%2C-4%20-36%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.34%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-32%20-50%2C-52%20-78%2C-30%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-18%2C-14%20C-26%2C-26%20-40%2C-40%20-55%2C-48%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28448%2C145%29%20rotate%2822%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-6%2C-34%20-36%2C-58%20-54%2C-60%20C-68%2C-62%20-78%2C-50%20-70%2C-28%20C-60%2C-4%20-30%2C14%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.31%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-18%2C-28%20-44%2C-48%20-70%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28295%2C440%29%20rotate%28-8%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-48%2C-44%20C-56%2C-54%20-66%2C-64%20-76%2C-70%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-15%2C-14%20C-20%2C-28%20-30%2C-44%20-44%2C-54%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28340%2C492%29%20rotate%2818%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-50%2046%2C-78%2068%2C-80%20C86%2C-82%20100%2C-66%2088%2C-38%20C76%2C-8%2040%2C22%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C22%2C-42%2058%2C-64%2088%2C-38%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C28%2C-34%2044%2C-52%2062%2C-62%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M10%2C-10%20C14%2C-22%2022%2C-34%2034%2C-42%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28238%2C488%29%20rotate%28-32%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-44%20-44%2C-72%20-64%2C-74%20C-80%2C-76%20-92%2C-62%20-82%2C-36%20C-70%2C-8%20-38%2C18%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.35%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-36%20-54%2C-58%20-82%2C-36%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-16%20C-28%2C-30%20-42%2C-46%20-58%2C-55%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28300%2C128%29%20rotate%2810%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-24%2C-20%20C-34%2C-38%20-52%2C-56%20-70%2C-66%22%20class%3D%22v2%22%2F%3E%3Cpath%20d%3D%22M-14%2C-12%20C-20%2C-26%20-30%2C-40%20-44%2C-50%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28258%2C90%29%20rotate%28-14%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-36%20-40%2C-62%20-60%2C-64%20C-76%2C-66%20-86%2C-52%20-76%2C-28%20C-66%2C-4%20-34%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.30%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-30%20-48%2C-50%20-76%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28348%2C98%29%20rotate%2826%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-38%2042%2C-64%2062%2C-66%20C78%2C-68%2088%2C-54%2080%2C-30%20C70%2C-5%2036%2C16%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.29%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-32%2050%2C-52%2080%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28720%2C170%29%20rotate%28-42%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28682%2C128%29%20rotate%28-20%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C8%2C-40%2038%2C-68%2060%2C-70%20C76%2C-71%2088%2C-58%2080%2C-32%20C70%2C-5%2035%2C14%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.36%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-34%2050%2C-55%2080%2C-32%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28748%2C230%29%20rotate%28-58%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-48%2045%2C-76%2068%2C-78%20C88%2C-80%20100%2C-65%2090%2C-38%20C78%2C-8%2042%2C20%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.39%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C25%2C-40%2058%2C-62%2090%2C-38%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28-120%2C195%29%20rotate%2838%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28-90%2C255%29%20rotate%2854%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-38%20-40%2C-64%20-60%2C-66%20C-76%2C-68%20-86%2C-54%20-78%2C-30%20C-68%2C-4%20-36%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.34%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-32%20-50%2C-52%20-78%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28295%2C-160%29%20rotate%28-8%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28340%2C-108%29%20rotate%2818%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-50%2046%2C-78%2068%2C-80%20C86%2C-82%20100%2C-66%2088%2C-38%20C76%2C-8%2040%2C22%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C22%2C-42%2058%2C-64%2088%2C-38%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28300%2C728%29%20rotate%2810%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-24%2C-20%20C-34%2C-38%20-52%2C-56%20-70%2C-66%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28258%2C690%29%20rotate%28-14%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C-8%2C-36%20-40%2C-62%20-60%2C-64%20C-76%2C-66%20-86%2C-52%20-76%2C-28%20C-66%2C-4%20-34%2C16%200%2C0%20Z%22%20class%3D%22lb%22%20opacity%3D%220.30%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-20%2C-30%20-48%2C-50%20-76%2C-28%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20transform%3D%22translate%28348%2C698%29%20rotate%2826%29%22%3E%3Cpath%20d%3D%22M0%2C0%20C10%2C-38%2042%2C-64%2062%2C-66%20C78%2C-68%2088%2C-54%2080%2C-30%20C70%2C-5%2036%2C16%200%2C0%20Z%22%20class%3D%22lc%22%20opacity%3D%220.29%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C20%2C-32%2050%2C-52%2080%2C-30%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
+LIGHT_BG_SVG = """url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22800%22%20height%3D%22800%22%3E%0A%3Crect%20width%3D%22800%22%20height%3D%22800%22%20fill%3D%22%23eef7f2%22%2F%3E%0A%3Cstyle%3E.la%7Bfill%3A%236abf8a%7D.lb%7Bfill%3A%2386c9a0%7D.lc%7Bfill%3A%234caf78%7D.v%7Bstroke%3A%232d8a58%3Bstroke-width%3A0.8%3Bfill%3Anone%3Bopacity%3A0.38%7D.v2%7Bstroke%3A%233aaa6a%3Bstroke-width%3A0.5%3Bfill%3Anone%3Bopacity%3A0.26%7D%0A@keyframes%20drift%20%7B0%25%7Btransform%3Atranslate(0%2C0)%7D100%25%7Btransform%3Atranslate(20px%2C15px)%7D%7D%0A.g1%7Banimation%3Adrift%2022s%20ease-in-out%20infinite%20alternate%3B%7D%0A.g2%7Banimation%3Adrift%2028s%20ease-in-out%20infinite%20alternate-reverse%3B%7D%0A.g3%7Banimation%3Adrift%2019s%20ease-in-out%20infinite%20alternate%3B%7D%3C%2Fstyle%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(120%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M20%2C-18%20C32%2C-36%2050%2C-50%2070%2C-56%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(480%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-22%2C-42%20-60%2C-65%20-92%2C-42%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-20%2C-18%20C-30%2C-34%20-46%2C-50%20-62%2C-58%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(295%2C440)%20rotate(-8)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-14%2C-58%20-56%2C-88%20-82%2C-90%20C-104%2C-92%20-118%2C-74%20-106%2C-44%20C-92%2C-10%20-50%2C24%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-30%2C-48%20-70%2C-72%20-106%2C-44%22%20class%3D%22v%22%2F%3E%3Cpath%20d%3D%22M-25%2C-22%20C-36%2C-40%20-54%2C-58%20-72%2C-68%22%20class%3D%22v2%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g1%22%20transform%3D%22translate(720%2C170)%20rotate(-42)%22%3E%3Cpath%20d%3D%22M0%2C0%20C12%2C-55%2052%2C-85%2072%2C-88%20C90%2C-90%20105%2C-75%2095%2C-45%20C82%2C-10%2045%2C18%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.42%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C30%2C-44%2065%2C-68%2095%2C-45%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g2%22%20transform%3D%22translate(-120%2C195)%20rotate(38)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-10%2C-52%20-48%2C-82%20-70%2C-84%20C-88%2C-86%20-102%2C-70%20-92%2C-42%20C-80%2C-10%20-44%2C20%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.41%22%2F%3E%3C%2Fg%3E%0A%3Cg%20class%3D%22g3%22%20transform%3D%22translate(300%2C728)%20rotate(10)%22%3E%3Cpath%20d%3D%22M0%2C0%20C-12%2C-52%20-50%2C-80%20-74%2C-82%20C-94%2C-84%20-108%2C-68%20-96%2C-40%20C-82%2C-8%20-44%2C22%200%2C0%20Z%22%20class%3D%22la%22%20opacity%3D%220.37%22%2F%3E%3Cpath%20d%3D%22M0%2C0%20C-28%2C-44%20-64%2C-66%20-96%2C-40%22%20class%3D%22v%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")"""
 
+# Complete theme CSS with animations
 THEME_CSS = f"""
 <style>
-/* ── Wallpaper background ───────────────────────────────────────── */
-.stApp {{
-    background-image: {DARK_BG_SVG if _is_dark else LIGHT_BG_SVG} !important;
-    background-size: 600px 600px !important;
-    background-repeat: repeat !important;
-    background-attachment: fixed !important;
+/* ── Global animations ─────────────────────────────────────────── */
+@keyframes fadeInUp {{
+    from {{ opacity: 0; transform: translateY(20px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
 }}
 
-/* Frosted overlay so content stays readable */
+@keyframes glowPulse {{
+    0% {{ box-shadow: 0 0 0 0 rgba(212,175,114,0.4); }}
+    70% {{ box-shadow: 0 0 0 10px rgba(212,175,114,0); }}
+    100% {{ box-shadow: 0 0 0 0 rgba(212,175,114,0); }}
+}}
+
+@keyframes metricPop {{
+    0% {{ transform: scale(0.95); opacity: 0; }}
+    80% {{ transform: scale(1.02); }}
+    100% {{ transform: scale(1); opacity: 1; }}
+}}
+
+/* ── Wallpaper background with parallax effect ──────────────────── */
+.stApp {{
+    background-image: {DARK_BG_SVG if _is_dark else LIGHT_BG_SVG} !important;
+    background-size: 800px 800px !important;
+    background-repeat: repeat !important;
+    background-attachment: fixed !important;
+    transition: background-image 0.5s ease !important;
+}}
+
+/* Frosted overlay with blur */
 .stApp::before {{
     content: "";
     position: fixed;
     inset: 0;
-    background: {"rgba(20,22,28,0.62)" if _is_dark else "rgba(240,250,245,0.78)"};
+    background: {"rgba(20,22,28,0.65)" if _is_dark else "rgba(238,247,242,0.72)"};
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     pointer-events: none;
     z-index: 0;
+    transition: background 0.3s ease;
 }}
 
 .block-container {{
     position: relative;
     z-index: 1;
+    animation: fadeInUp 0.6s ease-out;
 }}
 
-/* ── Typography — fully visible in both themes ──────────────────── */
-html, body {{
-    color-scheme: {"dark" if _is_dark else "light"} !important;
-}}
-
+/* ── Typography with subtle glow ────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {{
-    color: {"#f0e8d8" if _is_dark else "#12200e"} !important;
-    text-shadow: {"0 1px 8px rgba(0,0,0,0.6)" if _is_dark else "none"} !important;
+    color: {"#f5ebd6" if _is_dark else "#0f2a1a"} !important;
+    text-shadow: {"0 2px 12px rgba(212,175,114,0.25)" if _is_dark else "0 1px 4px rgba(100,140,80,0.15)"} !important;
+    letter-spacing: -0.02em;
 }}
 
-p, span, div, label, .stMarkdown,
-.stCaption, [data-testid="stCaptionContainer"] {{
-    color: {"#d8ccb8" if _is_dark else "#1e3a28"} !important;
+h1 {{
+    background: linear-gradient(135deg, {"#f5e6c8" if _is_dark else "#1a4a2a"}, {"#d4af72" if _is_dark else "#3a8a5a"});
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    text-shadow: none;
 }}
 
-/* Metric labels & values */
-div[data-testid="stMetricLabel"] > div,
-div[data-testid="stMetricLabel"] label,
-div[data-testid="stMetricLabel"] span {{
-    color: {"#b0a090" if _is_dark else "#3a5a42"} !important;
-    font-size: 0.78rem !important;
-}}
-
-div[data-testid="stMetricValue"] > div,
-div[data-testid="stMetricValue"] span {{
-    color: {"#f5e6c8" if _is_dark else "#12200e"} !important;
-    font-weight: 800 !important;
-    font-size: 1.5rem !important;
-}}
-
-/* ── Metric cards ───────────────────────────────────────────────── */
+/* ── Animated Metric Cards ─────────────────────────────────────── */
 div[data-testid="stMetric"] {{
-    background: {"linear-gradient(160deg,rgba(57,62,70,0.92) 0%,rgba(38,43,52,0.96) 100%)" if _is_dark else "linear-gradient(160deg,rgba(255,255,255,0.82) 0%,rgba(230,250,238,0.88) 100%)"} !important;
-    border: {"1px solid rgba(148,137,121,0.30)" if _is_dark else "1px solid rgba(80,170,110,0.45)"} !important;
-    box-shadow: {"0 8px 32px rgba(0,0,0,0.55),inset 0 1px 0 rgba(223,208,184,0.08)" if _is_dark else "0 8px 24px rgba(60,140,80,0.12),inset 0 1px 0 rgba(255,255,255,0.8)"} !important;
+    animation: metricPop 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+    background: {"linear-gradient(135deg,rgba(57,62,70,0.92) 0%,rgba(38,43,52,0.96) 100%)" if _is_dark else "linear-gradient(135deg,rgba(255,255,255,0.85) 0%,rgba(230,250,238,0.92) 100%)"} !important;
+    border: {"1px solid rgba(212,175,114,0.35)" if _is_dark else "1px solid rgba(80,170,110,0.5)"} !important;
+    border-radius: 20px !important;
     backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border-radius: 16px !important;
 }}
 
-div[data-testid="stMetric"]::before {{
-    background: {"linear-gradient(90deg,transparent,rgba(212,175,114,0.65),transparent)" if _is_dark else "linear-gradient(90deg,transparent,rgba(60,160,90,0.5),transparent)"} !important;
+div[data-testid="stMetric"]:hover {{
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: {"0 20px 40px rgba(0,0,0,0.5)" if _is_dark else "0 20px 40px rgba(60,140,80,0.2)"} !important;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }}
 
-/* ── Text areas ─────────────────────────────────────────────────── */
+div[data-testid="stMetricValue"] > div {{
+    font-size: 1.8rem !important;
+    background: linear-gradient(135deg, {"#f5e6c8" if _is_dark else "#1a4a2a"}, {"#d4af72" if _is_dark else "#3a8a5a"});
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}}
+
+/* ── Text Areas with focus animation ───────────────────────────── */
 .stTextArea textarea {{
-    background: {"rgba(38,43,52,0.90)" if _is_dark else "rgba(240,252,245,0.85)"} !important;
-    border: {"1px solid rgba(148,137,121,0.28)" if _is_dark else "1px solid rgba(80,170,110,0.4)"} !important;
-    color: {"#e8d8c0" if _is_dark else "#12200e"} !important;
-    backdrop-filter: blur(8px) !important;
-    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+    background: {"rgba(38,43,52,0.92)" if _is_dark else "rgba(240,252,245,0.9)"} !important;
+    border-radius: 16px !important;
+    font-family: 'JetBrains Mono', monospace !important;
 }}
 
-.stTextArea textarea::placeholder {{
-    color: {"rgba(180,160,130,0.55)" if _is_dark else "rgba(40,100,55,0.45)"} !important;
+.stTextArea textarea:focus {{
+    transform: scale(1.01);
+    border-color: var(--accent-gold) !important;
+    box-shadow: 0 0 0 3px rgba(212,175,114,0.3) !important;
 }}
 
-/* ── Summary & session boxes ────────────────────────────────────── */
-.entryexit-summary-box {{
-    background: {"rgba(38,43,52,0.90)" if _is_dark else "rgba(240,252,245,0.85)"} !important;
-    border-color: {"rgba(148,137,121,0.25)" if _is_dark else "rgba(80,170,110,0.4)"} !important;
-    backdrop-filter: blur(10px) !important;
-    color: {"#e0d0b8" if _is_dark else "#1e3a28"} !important;
+/* ── Buttons with ripple effect ────────────────────────────────── */
+.stButton > button {{
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1) !important;
+    border-radius: 40px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em;
 }}
 
-.entryexit-summary-box b {{
-    color: {"#f0e0c0" if _is_dark else "#12200e"} !important;
+.stButton > button::after {{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s, height 0.4s;
 }}
 
-.ee-session-col {{
-    background: {"rgba(38,43,52,0.90)" if _is_dark else "rgba(240,252,245,0.85)"} !important;
-    border-color: {"rgba(148,137,121,0.25)" if _is_dark else "rgba(80,170,110,0.35)"} !important;
-    backdrop-filter: blur(10px) !important;
+.stButton > button:active::after {{
+    width: 200px;
+    height: 200px;
+    opacity: 0;
 }}
 
-.ee-row-label, .ee-row-range {{
-    color: {"rgba(200,185,155,0.75)" if _is_dark else "rgba(30,60,35,0.7)"} !important;
+.stButton > button:hover {{
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(212,175,114,0.35) !important;
 }}
 
-/* ── Tabs ───────────────────────────────────────────────────────── */
+/* ── Tabs with elegant animation ───────────────────────────────── */
 [data-testid="stTabs"] [role="tablist"] {{
-    gap: 4px !important;
-    border-bottom: {"1px solid rgba(212,175,114,0.20)" if _is_dark else "1px solid rgba(60,140,80,0.18)"} !important;
+    gap: 8px !important;
     background: transparent !important;
 }}
 
 [data-testid="stTabs"] [role="tab"] {{
-    color: {"rgba(180,155,110,0.45)" if _is_dark else "rgba(60,120,75,0.40)"} !important;
-    font-weight: 700 !important;
-    font-size: 0.93rem !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-    padding: 0.55rem 1.4rem !important;
-    border-radius: 8px 8px 0 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    transition: color 0.20s ease, background 0.20s ease, box-shadow 0.20s ease !important;
+    transition: all 0.25s ease !important;
+    border-radius: 40px !important;
+    padding: 0.6rem 1.8rem !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(8px);
 }}
 
 [data-testid="stTabs"] [role="tab"]:hover {{
-    color: {"rgba(212,175,114,0.90)" if _is_dark else "rgba(30,100,50,0.90)"} !important;
-    background: {"rgba(212,175,114,0.06)" if _is_dark else "rgba(60,140,80,0.06)"} !important;
-    box-shadow: none !important;
-    border: none !important;
+    transform: translateY(-2px);
+    background: {"rgba(212,175,114,0.12)" if _is_dark else "rgba(80,170,110,0.1)"} !important;
 }}
 
 [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
-    color: {"#e8c96a" if _is_dark else "#0f3d1f"} !important;
-    background: {"rgba(212,175,114,0.09)" if _is_dark else "rgba(60,140,80,0.08)"} !important;
-    border: none !important;
-    border-bottom: {"2px solid #d4af72" if _is_dark else "2px solid #14532d"} !important;
-    box-shadow: {"inset 0 2px 8px rgba(212,175,114,0.10)" if _is_dark else "inset 0 2px 8px rgba(60,140,80,0.08)"} !important;
-    text-shadow: {"0 0 16px rgba(212,175,114,0.45)" if _is_dark else "none"} !important;
+    background: {"linear-gradient(135deg,rgba(212,175,114,0.2),rgba(212,175,114,0.05))" if _is_dark else "linear-gradient(135deg,rgba(80,170,110,0.15),rgba(80,170,110,0.05))"} !important;
+    border-bottom: none !important;
+    box-shadow: {"0 4px 15px rgba(212,175,114,0.2)" if _is_dark else "0 4px 15px rgba(80,170,110,0.15)"} !important;
 }}
 
-/* ── Radio & other form elements ────────────────────────────────── */
-[data-testid="stRadio"] label span {{
-    color: {"#d0c4a8" if _is_dark else "#1e3a28"} !important;
+/* ── Session panel with slide-in animation ─────────────────────── */
+.ee-session-col {{
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(12px) !important;
+    border-radius: 20px !important;
 }}
 
-/* ── Alerts / info boxes ────────────────────────────────────────── */
+.ee-session-col:hover {{
+    transform: translateY(-3px);
+    box-shadow: {"0 15px 35px rgba(0,0,0,0.3)" if _is_dark else "0 15px 35px rgba(80,170,110,0.15)"} !important;
+}}
+
+.ee-row {{
+    transition: all 0.2s ease !important;
+}}
+
+.ee-row:hover {{
+    background: {"rgba(212,175,114,0.08)" if _is_dark else "rgba(80,170,110,0.06)"};
+    border-radius: 8px;
+    padding-left: 8px;
+}}
+
+/* ── Hooray banner with bounce animation ───────────────────────── */
+@keyframes gentleBounce {{
+    0%, 100% {{ transform: translateY(0); }}
+    50% {{ transform: translateY(-5px); }}
+}}
+
+.more_enhanced_time_calculator-hooray-banner {{
+    animation: gentleBounce 0.6s ease-out, glowPulse 2s infinite;
+    backdrop-filter: blur(12px);
+    background: linear-gradient(135deg, #1f6b3a, #0f4a2a) !important;
+}}
+
+/* ── Info alerts with slide-in ─────────────────────────────────── */
 div[data-testid="stAlert"] {{
-    background: {"rgba(38,43,52,0.92)" if _is_dark else "rgba(230,250,238,0.85)"} !important;
-    border-color: {"rgba(148,137,121,0.30)" if _is_dark else "rgba(80,170,110,0.4)"} !important;
-    backdrop-filter: blur(10px) !important;
-    color: {"#e0d0b8" if _is_dark else "#1e3a28"} !important;
+    animation: fadeInUp 0.4s ease-out;
+    backdrop-filter: blur(12px);
+    border-radius: 16px !important;
 }}
 
-div[data-testid="stAlert"] p, div[data-testid="stAlert"] span {{
-    color: {"#e8d8c0" if _is_dark else "#1e3a28"} !important;
+/* ── Clock icon pulse animation ────────────────────────────────── */
+@keyframes clockPulse {{
+    0% {{ transform: scale(1); opacity: 1; }}
+    50% {{ transform: scale(1.05); opacity: 0.9; }}
+    100% {{ transform: scale(1); opacity: 1; }}
 }}
 
-/* ── Buttons — text color ───────────────────────────────────────── */
-.stButton > button, .stButton > button p, .stButton > button span, .stButton > button div,
-.stFormSubmitButton > button, .stFormSubmitButton > button p, .stFormSubmitButton > button span {{
-    color: {"#000000" if _is_dark else "#1a1308"} !important;
-    text-shadow: none !important;
+/* ── Custom scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar {{
+    width: 8px;
+    height: 8px;
 }}
 
-/* ── Buttons — text color ───────────────────────────────────────── */
-.stButton > button, .stButton > button p, .stButton > button span, .stButton > button div,
-.stFormSubmitButton > button, .stFormSubmitButton > button p, .stFormSubmitButton > button span {{
-    color: {"#000000" if _is_dark else "#1a1308"} !important;
-    text-shadow: none !important;
+::-webkit-scrollbar-track {{
+    background: {"rgba(57,62,70,0.5)" if _is_dark else "rgba(200,220,210,0.5)"};
+    border-radius: 10px;
 }}
 
-/* ── Hooray banner ──────────────────────────────────────────────── */
-.entryexit-hooray-banner {{
-    backdrop-filter: blur(10px) !important;
+::-webkit-scrollbar-thumb {{
+    background: {"#d4af72" if _is_dark else "#3a8a5a"};
+    border-radius: 10px;
+    transition: background 0.2s;
 }}
 
-/* ── Divider ────────────────────────────────────────────────────── */
-hr {{
-    border-color: {"rgba(180,140,80,0.28)" if _is_dark else "rgba(80,170,110,0.3)"} !important;
+::-webkit-scrollbar-thumb:hover {{
+    background: {"#e8c87a" if _is_dark else "#2a6a4a"};
 }}
 
-/* ── Tooltip ─────────────────────────────────────────────────────── */
-div[data-testid="tooltipHoverTarget"] + div,
-[data-testid="stTooltipContent"],
-div[role="tooltip"],
-.stTooltipContent {{
-    background: {"#2a2f3a" if _is_dark else "#ffffff"} !important;
-    color: {"#e0d0b8" if _is_dark else "#1a1308"} !important;
-    border: {"1px solid rgba(212,175,114,0.30)" if _is_dark else "1px solid rgba(0,0,0,0.10)"} !important;
-    border-radius: 8px !important;
-    box-shadow: {"0 4px 20px rgba(0,0,0,0.6)" if _is_dark else "0 4px 16px rgba(0,0,0,0.12)"} !important;
+/* ── Loading spinner animation ─────────────────────────────────── */
+@keyframes spin {{
+    to {{ transform: rotate(360deg); }}
 }}
-div[role="tooltip"] *, [data-testid="stTooltipContent"] * {{
-    color: {"#e0d0b8" if _is_dark else "#1a1308"} !important;
+
+.stSpinner > div {{
+    animation: spin 1s linear infinite !important;
+    border-top-color: var(--accent-gold) !important;
+}}
+
+/* ── Smooth transitions for all interactive elements ───────────── */
+button, div[data-testid="stMetric"], .stTextArea textarea, [role="tab"] {{
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
 }}
 </style>
 """
@@ -1113,7 +1162,7 @@ with hdr_icon:
     st.markdown(CLOCK_SVG, unsafe_allow_html=True)
 
 with hdr_title:
-    st.title("EntryExit Insight")
+    st.title("More Enhanced Time Calculator")
 
 with hdr_toggle:
     toggle_label = "☀️  Light" if _is_dark else "🌙  Dark"
@@ -1130,13 +1179,13 @@ with hdr_toggle:
             background: {"linear-gradient(145deg,#2a2318 0%,#1a1610 50%,#221d14 100%)" if _is_dark else "linear-gradient(145deg,#fffdf5 0%,#f7e8c0 50%,#f0d898 100%)"} !important;
             color: {"#d4af72" if _is_dark else "#6b4a0e"} !important;
             border: {"1px solid rgba(212,175,114,0.35)" if _is_dark else "1px solid rgba(180,130,40,0.45)"} !important;
-            border-radius: 14px !important;
+            border-radius: 40px !important;
             font-size: 0.78rem !important;
             font-weight: 700 !important;
             letter-spacing: 0.08em !important;
             text-transform: uppercase !important;
-            padding: 0.35rem 1.1rem !important;
-            min-height: 2.2rem !important;
+            padding: 0.45rem 1.3rem !important;
+            min-height: 2.4rem !important;
             position: relative !important;
             overflow: hidden !important;
             box-shadow: {
