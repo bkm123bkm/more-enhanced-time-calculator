@@ -7,7 +7,7 @@ import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parent
 ICON_PATH = BASE_DIR / "Icon.png"
-PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⚡"
+PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⏱️"
 PUNE_TZ = ZoneInfo("Asia/Kolkata")
 
 # Widget keys
@@ -32,315 +32,418 @@ st.set_page_config(
 
 
 # ============================================================================
-# BRAND NEW UI DESIGN - MINIMALIST MODERN
+# BEAUTIFUL MODERN UI WITH WORKING DARK/LIGHT MODE
 # ============================================================================
 
+# Theme initialization
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "light"
+
+# Apply theme class to body
+theme_class = "dark-mode" if st.session_state.theme_mode == "dark" else "light-mode"
+
 st.markdown(
-    """
+    f"""
     <style>
     /* Import fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
-    * {
-        font-family: 'Inter', system-ui, sans-serif !important;
-    }
+    * {{
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    }}
     
-    /* Light Theme */
-    [data-theme="light"] {
-        --bg: #f5f7fb;
-        --surface: #ffffff;
-        --surface-2: #f8f9fc;
-        --text: #1a1f36;
-        --text-2: #4a5568;
-        --text-3: #a0aec0;
+    /* Light Mode Variables */
+    .light-mode {{
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
         --border: #e2e8f0;
+        --border-light: #f1f5f9;
         --primary: #3b82f6;
         --primary-dark: #2563eb;
-        --primary-glow: rgba(59, 130, 246, 0.15);
+        --primary-light: #dbeafe;
         --success: #10b981;
+        --success-light: #d1fae5;
         --warning: #f59e0b;
         --danger: #ef4444;
-        --card-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 25px -5px rgba(0,0,0,0.05);
-        --hover-shadow: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.02);
-    }
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }}
     
-    /* Dark Theme */
-    [data-theme="dark"] {
-        --bg: #0a0c10;
-        --surface: #14161c;
-        --surface-2: #1a1d24;
-        --text: #e2e8f0;
-        --text-2: #94a3b8;
-        --text-3: #64748b;
-        --border: #2d3748;
+    /* Dark Mode Variables */
+    .dark-mode {{
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        --border: #334155;
+        --border-light: #1e293b;
         --primary: #60a5fa;
         --primary-dark: #3b82f6;
-        --primary-glow: rgba(96, 165, 250, 0.15);
+        --primary-light: #1e3a8a;
         --success: #34d399;
+        --success-light: #064e3b;
         --warning: #fbbf24;
         --danger: #f87171;
-        --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 10px 25px -5px rgba(0,0,0,0.2);
-        --hover-shadow: 0 20px 25px -5px rgba(0,0,0,0.3), 0 10px 10px -5px rgba(0,0,0,0.1);
-    }
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }}
     
-    /* Base */
-    .stApp {
-        background: var(--bg);
-        transition: all 0.2s ease;
-    }
+    /* Apply variables */
+    .stApp {{
+        background: var(--bg-primary);
+        transition: all 0.3s ease;
+    }}
     
-    .block-container {
-        max-width: 1300px !important;
+    .block-container {{
+        max-width: 1400px !important;
         padding: 2rem !important;
-    }
+    }}
     
     /* Typography */
-    h1 {
-        font-size: 2rem !important;
+    h1, h2, h3 {{
+        color: var(--text-primary) !important;
         font-weight: 700 !important;
-        color: var(--text) !important;
-        margin-bottom: 0.25rem !important;
         letter-spacing: -0.02em !important;
-    }
+    }}
     
-    p, .stMarkdown, .stCaption {
-        color: var(--text-2) !important;
-    }
+    h1 {{
+        font-size: 2.2rem !important;
+        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent !important;
+    }}
     
-    /* Custom Card */
-    .card {
-        background: var(--surface);
-        border-radius: 24px;
-        border: 1px solid var(--border);
-        padding: 1.5rem;
-        transition: all 0.2s ease;
-        box-shadow: var(--card-shadow);
-    }
+    p, .stMarkdown, .stCaption, label {{
+        color: var(--text-secondary) !important;
+    }}
     
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--hover-shadow);
-    }
+    /* Header Section */
+    .header-section {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+    }}
+    
+    .logo-area {{
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }}
+    
+    .logo-icon {{
+        font-size: 3rem;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        border-radius: 20px;
+        padding: 0.5rem;
+        display: inline-block;
+    }}
     
     /* Stats Grid */
-    .stats-grid {
+    .stats-container {{
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 16px;
-        margin: 20px 0;
-    }
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }}
     
-    .stat-card {
-        background: var(--surface-2);
+    .stat-box {{
+        background: var(--bg-secondary);
         border-radius: 20px;
-        padding: 16px;
+        padding: 1.25rem;
         text-align: center;
         border: 1px solid var(--border);
-        transition: all 0.2s ease;
-    }
+        transition: all 0.3s ease;
+    }}
     
-    .stat-card:hover {
-        transform: translateY(-2px);
+    .stat-box:hover {{
+        transform: translateY(-4px);
         border-color: var(--primary);
-    }
+        box-shadow: var(--shadow-lg);
+    }}
     
-    .stat-label {
+    .stat-label {{
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-3);
-        margin-bottom: 8px;
-    }
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }}
     
-    .stat-value {
+    .stat-value {{
         font-size: 1.6rem;
-        font-weight: 700;
-        color: var(--text);
-        font-family: monospace;
-    }
+        font-weight: 800;
+        color: var(--text-primary);
+        font-family: 'Monaco', monospace;
+    }}
     
-    /* Session Panel */
-    .session-panel {
+    /* Session Cards */
+    .sessions-grid {{
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 20px;
-    }
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }}
     
-    .session-card {
-        background: var(--surface-2);
-        border-radius: 20px;
-        border: 1px solid var(--border);
+    .session-box {{
+        background: var(--bg-secondary);
+        border-radius: 24px;
         overflow: hidden;
-    }
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }}
     
-    .session-header {
-        padding: 12px 16px;
-        font-weight: 600;
-        font-size: 0.8rem;
+    .session-box:hover {{
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }}
+    
+    .session-title {{
+        padding: 1rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        border-bottom: 1px solid var(--border);
-    }
+        border-bottom: 2px solid var(--border);
+    }}
     
-    .session-header.work {
-        background: rgba(59, 130, 246, 0.1);
+    .session-title.work {{
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
         color: var(--primary);
-    }
+    }}
     
-    .session-header.break {
-        background: rgba(245, 158, 11, 0.1);
+    .session-title.break {{
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent);
         color: var(--warning);
-    }
+    }}
     
-    .session-row {
+    .session-item {{
         display: flex;
         justify-content: space-between;
-        padding: 10px 16px;
-        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border-light);
+        transition: background 0.2s ease;
+    }}
+    
+    .session-item:hover {{
+        background: var(--bg-tertiary);
+    }}
+    
+    .session-time {{
+        color: var(--text-secondary);
         font-size: 0.85rem;
-    }
+    }}
     
-    .session-row:last-child {
-        border-bottom: none;
-    }
-    
-    .session-time {
-        color: var(--text-2);
-    }
-    
-    .session-duration {
-        font-weight: 600;
-    }
+    .session-duration {{
+        font-weight: 700;
+        font-size: 0.85rem;
+    }}
     
     .session-duration.work { color: var(--primary); }
     .session-duration.break { color: var(--warning); }
     
-    .live-badge {
+    .live-tag {{
         background: var(--success);
         padding: 2px 8px;
         border-radius: 20px;
         font-size: 0.6rem;
-        font-weight: 600;
-        color: white;
-        margin-left: 8px;
-        display: inline-block;
-    }
-    
-    /* Logout Info */
-    .logout-info {
-        background: var(--surface);
-        border-radius: 16px;
-        padding: 16px;
-        margin-top: 20px;
-        text-align: center;
-        border: 1px solid var(--border);
-    }
-    
-    .logout-time {
-        font-size: 1.5rem;
         font-weight: 700;
-        color: var(--primary);
-    }
-    
-    .success-banner {
-        background: linear-gradient(135deg, var(--success), #059669);
-        border-radius: 16px;
-        padding: 16px;
-        text-align: center;
         color: white;
-        font-weight: 600;
-        margin-top: 20px;
-    }
+        margin-left: 0.5rem;
+        display: inline-block;
+    }}
+    
+    /* Logout Card */
+    .logout-card {{
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        border-radius: 20px;
+        padding: 1.25rem;
+        text-align: center;
+        margin-top: 1.5rem;
+        border: 1px solid var(--border);
+    }}
+    
+    .logout-label {{
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }}
+    
+    .logout-time {{
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--primary);
+        font-family: monospace;
+    }}
+    
+    .success-card {{
+        background: linear-gradient(135deg, var(--success), #059669);
+        border-radius: 20px;
+        padding: 1.25rem;
+        text-align: center;
+        margin-top: 1.5rem;
+        animation: pulse 0.5s ease-out;
+    }}
+    
+    .success-card p {{
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin: 0;
+    }}
+    
+    @keyframes pulse {{
+        0% {{ transform: scale(0.95); opacity: 0; }}
+        100% {{ transform: scale(1); opacity: 1; }}
+    }}
     
     /* Text Area */
-    .stTextArea textarea {
-        background: var(--surface) !important;
+    .stTextArea textarea {{
+        background: var(--bg-secondary) !important;
         border: 1px solid var(--border) !important;
         border-radius: 16px !important;
-        color: var(--text) !important;
+        color: var(--text-primary) !important;
         font-size: 0.85rem !important;
-        font-family: monospace !important;
-    }
+        font-family: 'Monaco', monospace !important;
+    }}
     
-    .stTextArea textarea:focus {
+    .stTextArea textarea:focus {{
         border-color: var(--primary) !important;
-        box-shadow: 0 0 0 3px var(--primary-glow) !important;
-    }
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }}
     
     /* Buttons */
-    .stButton > button {
-        background: var(--primary) !important;
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
         color: white !important;
         border: none !important;
         border-radius: 40px !important;
-        padding: 10px 24px !important;
+        padding: 0.6rem 1.5rem !important;
         font-weight: 600 !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s ease !important;
         width: 100% !important;
-    }
+    }}
     
-    .stButton > button:hover {
-        background: var(--primary-dark) !important;
-        transform: translateY(-1px);
-    }
+    .stButton > button:hover {{
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }}
     
-    /* Radio Buttons */
-    .stRadio > div {
-        gap: 8px;
-        background: transparent !important;
-    }
+    /* Theme Toggle Button */
+    .theme-btn {{
+        background: var(--bg-secondary) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text-primary) !important;
+        border-radius: 40px !important;
+        padding: 0.5rem 1.2rem !important;
+        font-size: 0.85rem !important;
+    }}
     
-    .stRadio label {
-        background: var(--surface-2);
-        padding: 8px 24px;
-        border-radius: 40px;
+    /* Radio Buttons - Day Type */
+    .stRadio > div {{
+        gap: 0.75rem;
+        background: var(--bg-secondary);
+        padding: 0.5rem;
+        border-radius: 60px;
         border: 1px solid var(--border);
-        color: var(--text-2);
-        font-weight: 500;
-    }
+        display: inline-flex;
+    }}
     
-    .stRadio label:hover {
-        border-color: var(--primary);
-    }
+    .stRadio label {{
+        background: transparent !important;
+        padding: 0.5rem 1.5rem !important;
+        border-radius: 40px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+    }}
+    
+    .stRadio label:hover {{
+        color: var(--primary) !important;
+    }}
+    
+    /* Tabs */
+    [data-testid="stTabs"] [role="tablist"] {{
+        gap: 0.5rem;
+        background: var(--bg-secondary);
+        border-radius: 60px;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+    }}
+    
+    [data-testid="stTabs"] [role="tab"] {{
+        border-radius: 40px !important;
+        padding: 0.5rem 1.5rem !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+    }}
+    
+    [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        color: white !important;
+    }}
+    
+    [data-testid="stTabs"] [role="tabpanel"] {{
+        padding-top: 1.5rem;
+    }}
     
     /* Alerts */
-    .stAlert {
+    .stAlert {{
         border-radius: 16px !important;
         border: none !important;
-    }
+    }}
     
     /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
+    ::-webkit-scrollbar {{
+        width: 8px;
+        height: 8px;
+    }}
     
-    ::-webkit-scrollbar-track {
-        background: var(--surface-2);
-    }
+    ::-webkit-scrollbar-track {{
+        background: var(--bg-tertiary);
+        border-radius: 10px;
+    }}
     
-    ::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {{
         background: var(--primary);
         border-radius: 10px;
-    }
+    }}
     
     /* Divider */
-    hr {
-        margin: 20px 0;
+    hr {{
+        margin: 1.5rem 0;
         border-color: var(--border);
-    }
+    }}
+    
+    /* Info text */
+    .info-text {{
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }}
     </style>
+    
+    <script>
+        document.body.className = '{theme_class}';
+    </script>
     """,
     unsafe_allow_html=True,
 )
 
 
 # ── Utility functions ──────────────────────────────────────────────────────────
-
-def hms_to_seconds(hours: int, minutes: int, seconds: int) -> int:
-    return (hours * 3600) + (minutes * 60) + seconds
-
 
 def format_clock(seconds: int) -> str:
     seconds = max(seconds, 0)
@@ -365,9 +468,9 @@ DAY_FULL = "Full Day"
 DAY_HALF = "Half Day"
 DAY_TYPE_OPTIONS = (DAY_FULL, DAY_HALF)
 
-MEMBER_THRESHOLDS = {DAY_FULL: 27000, DAY_HALF: 16200}  # 7h30m, 4h30m
-LEADER_THRESHOLDS = {DAY_FULL: 25200, DAY_HALF: 14400}  # 7h, 4h
-BREAK_TARGET = 5400  # 1h30m
+MEMBER_THRESHOLDS = {DAY_FULL: 27000, DAY_HALF: 16200}
+LEADER_THRESHOLDS = {DAY_FULL: 25200, DAY_HALF: 14400}
+BREAK_TARGET = 5400
 
 
 def member_threshold(day_type: str) -> int:
@@ -462,70 +565,31 @@ def analyze_sessions(points: list[dt.datetime], current: dt.datetime = None) -> 
     }
 
 
-# ── Dashboard Components ───────────────────────────────────────────────────────
+# ── Dashboard Render Functions ─────────────────────────────────────────────────
 
-def render_stats(stats: dict):
-    cols = st.columns(5)
-    
-    metrics = [
-        ("Total Work", stats["total_work"]),
-        ("Break Time", stats["total_break"]),
-        ("Total Time", stats["total_work"] + stats["total_break"]),
-        ("Remaining Work", stats["remaining_work"]),
-        ("Remaining Break", stats["remaining_break"])
-    ]
-    
-    for col, (label, value) in zip(cols, metrics):
-        with col:
-            st.markdown(
-                f"""
-                <div class="stat-card">
-                    <div class="stat-label">{label}</div>
-                    <div class="stat-value">{format_clock(value) if value > 0 else "—"}</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-def render_sessions(work: list, breaks: list):
-    # Build work sessions HTML
-    work_html_parts = []
-    for s in work:
-        ongoing_html = '<span class="live-badge">LIVE</span>' if s.get("ongoing") else ""
-        work_html_parts.append(
-            f'<div class="session-row">'
-            f'<span class="session-time">{s["start"]} → {s["end"]}{ongoing_html}</span>'
-            f'<span class="session-duration work">{s["human"]}</span>'
-            f'</div>'
-        )
-    
-    if not work_html_parts:
-        work_html_parts.append('<div class="session-row"><span class="session-time">No sessions</span></div>')
-    
-    # Build break sessions HTML
-    break_html_parts = []
-    for s in breaks:
-        break_html_parts.append(
-            f'<div class="session-row">'
-            f'<span class="session-time">{s["start"]} → {s["end"]}</span>'
-            f'<span class="session-duration break">{s["human"]}</span>'
-            f'</div>'
-        )
-    
-    if not break_html_parts:
-        break_html_parts.append('<div class="session-row"><span class="session-time">No breaks</span></div>')
-    
+def render_stats_grid(stats: dict):
     st.markdown(
         f"""
-        <div class="session-panel">
-            <div class="session-card">
-                <div class="session-header work">🕐 WORK · {len(work)} sessions</div>
-                {''.join(work_html_parts)}
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Total Work</div>
+                <div class="stat-value">{format_clock(stats['total_work'])}</div>
             </div>
-            <div class="session-card">
-                <div class="session-header break">☕ BREAK · {len(breaks)} sessions</div>
-                {''.join(break_html_parts)}
+            <div class="stat-box">
+                <div class="stat-label">Break Time</div>
+                <div class="stat-value">{format_clock(stats['total_break'])}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Total Time</div>
+                <div class="stat-value">{format_clock(stats['total_work'] + stats['total_break'])}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Remaining Work</div>
+                <div class="stat-value">{format_clock(stats['remaining_work']) if stats['remaining_work'] > 0 else "✓"}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Remaining Break</div>
+                <div class="stat-value">{format_clock(stats['remaining_break']) if stats['remaining_break'] > 0 else "✓"}</div>
             </div>
         </div>
         """,
@@ -533,28 +597,75 @@ def render_sessions(work: list, breaks: list):
     )
 
 
-def render_logout(deadline: dt.datetime, first: dt.datetime, now: dt.datetime):
+def render_sessions_panel(work: list, breaks: list):
+    # Build work HTML
+    work_html = ""
+    for s in work:
+        live_tag = '<span class="live-tag">LIVE</span>' if s.get("ongoing") else ""
+        work_html += f'''
+            <div class="session-item">
+                <span class="session-time">{s["start"]} → {s["end"]}{live_tag}</span>
+                <span class="session-duration work">{s["human"]}</span>
+            </div>
+        '''
+    
+    if not work_html:
+        work_html = '<div class="session-item"><span class="session-time">No work sessions</span></div>'
+    
+    # Build break HTML
+    break_html = ""
+    for s in breaks:
+        break_html += f'''
+            <div class="session-item">
+                <span class="session-time">{s["start"]} → {s["end"]}</span>
+                <span class="session-duration break">{s["human"]}</span>
+            </div>
+        '''
+    
+    if not break_html:
+        break_html = '<div class="session-item"><span class="session-time">No breaks taken</span></div>'
+    
+    st.markdown(
+        f"""
+        <div class="sessions-grid">
+            <div class="session-box">
+                <div class="session-title work">🕐 WORK SESSIONS · {len(work)}</div>
+                {work_html}
+            </div>
+            <div class="session-box">
+                <div class="session-title break">☕ BREAK SESSIONS · {len(breaks)}</div>
+                {break_html}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def render_logout_status(deadline: dt.datetime, first: dt.datetime, now: dt.datetime, show_sessions: bool):
     if now < deadline:
         time_str = deadline.strftime("%I:%M %p").lstrip("0")
         if deadline.date() != first.date():
             time_str = deadline.strftime("%d %b, %I:%M %p").lstrip("0")
         st.markdown(
             f"""
-            <div class="logout-info">
-                <div style="margin-bottom: 4px; font-size: 0.8rem; color: var(--text-3);">Earliest Logout Time</div>
+            <div class="logout-card">
+                <div class="logout-label">⏰ Earliest Logout Time</div>
                 <div class="logout-time">{time_str}</div>
             </div>
             """,
             unsafe_allow_html=True
         )
+        return True
     else:
         st.markdown(
-            '<div class="success-banner">🎉 Target Completed! You\'re Free to Go! 🎉</div>',
+            '<div class="success-card"><p>🎉 TARGET COMPLETED! You\'re Free to Go! 🎉</p></div>',
             unsafe_allow_html=True
         )
+        return False
 
 
-# ── Role Dashboard ────────────────────────────────────────────────────────────
+# ── Dashboard Components ───────────────────────────────────────────────────────
 
 def member_dashboard(points: list, day_type: str):
     now = now_pune()
@@ -564,7 +675,6 @@ def member_dashboard(points: list, day_type: str):
     total_work = result["total_work"] + result["ongoing_work"]
     remaining = max(required - total_work, 0)
     deadline = now + dt.timedelta(seconds=remaining)
-    
     remaining_break = max(BREAK_TARGET - result["total_break"], 0)
     
     stats = {
@@ -574,18 +684,23 @@ def member_dashboard(points: list, day_type: str):
         "remaining_break": remaining_break
     }
     
-    st.caption(f"Clocked in: {points[0].strftime('%I:%M %p').lstrip('0')} on {points[0].strftime('%d %b %Y')}")
+    st.caption(f"👤 Clocked in: {points[0].strftime('%I:%M %p').lstrip('0')} on {points[0].strftime('%d %b %Y')}")
     
-    render_stats(stats)
+    render_stats_grid(stats)
     
+    # Show/hide sessions button - always show when there's an active session
+    show_key = f"show_member_sessions_{id(points)}"
     if result["has_ongoing"]:
-        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_member"):
-            st.session_state.show_member_sessions = not st.session_state.get("show_member_sessions", False)
+        if st.button("📋 Show/Hide Session Details", use_container_width=True, key=show_key):
+            st.session_state[show_key] = not st.session_state.get(show_key, False)
         
-        if st.session_state.get("show_member_sessions", False):
-            render_sessions(result["work_sessions"], result["break_sessions"])
+        if st.session_state.get(show_key, False):
+            render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
-    render_logout(deadline, points[0], now)
+    # Logout status
+    is_completed = render_logout_status(deadline, points[0], now, result["has_ongoing"])
+    
+    return is_completed
 
 
 def leader_dashboard(points: list, day_type: str):
@@ -596,7 +711,6 @@ def leader_dashboard(points: list, day_type: str):
     total_work = result["total_work"] + result["ongoing_work"]
     remaining = max(required - total_work, 0)
     deadline = now + dt.timedelta(seconds=remaining)
-    
     remaining_break = max(BREAK_TARGET - result["total_break"], 0)
     
     stats = {
@@ -606,18 +720,23 @@ def leader_dashboard(points: list, day_type: str):
         "remaining_break": remaining_break
     }
     
-    st.caption(f"Clocked in: {points[0].strftime('%I:%M %p').lstrip('0')} on {points[0].strftime('%d %b %Y')}")
+    st.caption(f"👑 Clocked in: {points[0].strftime('%I:%M %p').lstrip('0')} on {points[0].strftime('%d %b %Y')}")
     
-    render_stats(stats)
+    render_stats_grid(stats)
     
+    # Show/hide sessions button - always show when there's an active session
+    show_key = f"show_leader_sessions_{id(points)}"
     if result["has_ongoing"]:
-        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_leader"):
-            st.session_state.show_leader_sessions = not st.session_state.get("show_leader_sessions", False)
+        if st.button("📋 Show/Hide Session Details", use_container_width=True, key=show_key):
+            st.session_state[show_key] = not st.session_state.get(show_key, False)
         
-        if st.session_state.get("show_leader_sessions", False):
-            render_sessions(result["work_sessions"], result["break_sessions"])
+        if st.session_state.get(show_key, False):
+            render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
-    render_logout(deadline, points[0], now)
+    # Logout status
+    is_completed = render_logout_status(deadline, points[0], now, result["has_ongoing"])
+    
+    return is_completed
 
 
 # ── Live Fragments ────────────────────────────────────────────────────────────
@@ -636,7 +755,7 @@ def leader_live():
         leader_dashboard(points, st.session_state.leader_day_type)
 
 
-# ─── Session State ────────────────────────────────────────────────────────────
+# ─── Session State Initialization ─────────────────────────────────────────────
 
 if "member_day_type" not in st.session_state:
     st.session_state.member_day_type = DAY_FULL
@@ -646,18 +765,6 @@ if "member_points" not in st.session_state:
     st.session_state.member_points = None
 if "leader_points" not in st.session_state:
     st.session_state.leader_points = None
-if "theme" not in st.session_state:
-    st.session_state.theme = "light"
-if "show_member_sessions" not in st.session_state:
-    st.session_state.show_member_sessions = False
-if "show_leader_sessions" not in st.session_state:
-    st.session_state.show_leader_sessions = False
-
-
-# ─── Theme ─────────────────────────────────────────────────────────────────────
-
-theme_attr = f'data-theme="{st.session_state.theme}"'
-st.markdown(f'<body {theme_attr}></body>', unsafe_allow_html=True)
 
 
 # ─── Header ───────────────────────────────────────────────────────────────────
@@ -665,18 +772,24 @@ st.markdown(f'<body {theme_attr}></body>', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([1, 8, 2])
 
 with col1:
-    st.markdown('<span style="font-size: 42px;">⏱️</span>', unsafe_allow_html=True)
+    st.markdown('<div class="logo-icon">⏱️</div>', unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<h1>TimeTrack Pro</h1><p style="margin-top: -8px;">Biometric Time Intelligence</p>', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <h1>TimeTrack Pro</h1>
+        <p style="margin-top: -8px;">Intelligent Biometric Time Analysis</p>
+        """,
+        unsafe_allow_html=True
+    )
 
 with col3:
-    theme_label = "🌙 Dark" if st.session_state.theme == "light" else "☀️ Light"
+    theme_label = "🌙 Dark Mode" if st.session_state.theme_mode == "light" else "☀️ Light Mode"
     if st.button(theme_label, key="theme_toggle", use_container_width=True):
-        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+        st.session_state.theme_mode = "dark" if st.session_state.theme_mode == "light" else "light"
         st.rerun()
 
-st.caption(f"📍 Pune, IST • {now_pune().strftime('%A, %d %b %Y • %I:%M:%S %p')}")
+st.caption(f"📍 Pune, India (IST) • {now_pune().strftime('%A, %d %B %Y • %I:%M:%S %p')}")
 
 
 # ─── Main Tabs ────────────────────────────────────────────────────────────────
@@ -685,7 +798,7 @@ tab1, tab2 = st.tabs(["👤 TEAM MEMBER", "👑 TEAM LEADER"])
 
 # ==================== TEAM MEMBER TAB ====================
 with tab1:
-    # Day Type Selection using Radio
+    # Day Type Selection
     member_day = st.radio(
         "Select Day Type",
         DAY_TYPE_OPTIONS,
@@ -703,7 +816,7 @@ with tab1:
         log = st.text_area(
             "Biometric Log",
             height=150,
-            placeholder="Paste your biometric log here...\n\n09:15\n13:00\n14:00\n18:30",
+            placeholder="Paste your biometric log here...\n\nExample:\n09:15\n13:00\n14:00\n18:30",
             key="member_input",
             label_visibility="collapsed"
         )
@@ -714,12 +827,11 @@ with tab1:
         pts = parse_log(raw)
         if pts:
             st.session_state.member_points = pts
-            st.success(f"✅ Parsed {len(pts)} time entries")
+            st.success(f"✅ Successfully parsed {len(pts)} time entries")
         else:
-            st.error("❌ Please enter valid times (HH:MM format)")
+            st.error("❌ Please enter valid times in HH:MM format")
             st.session_state.member_points = None
     
-    # Live Dashboard
     st.markdown("---")
     st.markdown("### 📊 Live Dashboard")
     member_live()
@@ -727,7 +839,7 @@ with tab1:
 
 # ==================== TEAM LEADER TAB ====================
 with tab2:
-    # Day Type Selection using Radio
+    # Day Type Selection
     leader_day = st.radio(
         "Select Day Type",
         DAY_TYPE_OPTIONS,
@@ -745,7 +857,7 @@ with tab2:
         log = st.text_area(
             "Biometric Log",
             height=150,
-            placeholder="Paste your biometric log here...\n\n09:15\n13:00\n14:00\n18:30",
+            placeholder="Paste your biometric log here...\n\nExample:\n09:15\n13:00\n14:00\n18:30",
             key="leader_input",
             label_visibility="collapsed"
         )
@@ -756,12 +868,11 @@ with tab2:
         pts = parse_log(raw)
         if pts:
             st.session_state.leader_points = pts
-            st.success(f"✅ Parsed {len(pts)} time entries")
+            st.success(f"✅ Successfully parsed {len(pts)} time entries")
         else:
-            st.error("❌ Please enter valid times (HH:MM format)")
+            st.error("❌ Please enter valid times in HH:MM format")
             st.session_state.leader_points = None
     
-    # Live Dashboard
     st.markdown("---")
     st.markdown("### 📊 Live Dashboard")
     leader_live()
