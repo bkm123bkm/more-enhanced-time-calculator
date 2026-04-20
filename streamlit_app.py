@@ -31,421 +31,384 @@ st.set_page_config(
 )
 
 
-# ============================================================================
-# BEAUTIFUL MODERN UI WITH WORKING DARK/LIGHT MODE
-# ============================================================================
-
 # Theme initialization
 if "theme_mode" not in st.session_state:
     st.session_state.theme_mode = "light"
 
-# Apply theme class to body
-theme_class = "dark-mode" if st.session_state.theme_mode == "dark" else "light-mode"
 
-st.markdown(
-    f"""
-    <style>
-    /* Import fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    
-    * {{
-        font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
-    }}
-    
-    /* Light Mode Variables */
-    .light-mode {{
-        --bg-primary: #f8fafc;
-        --bg-secondary: #ffffff;
-        --bg-tertiary: #f1f5f9;
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --text-muted: #94a3b8;
-        --border: #e2e8f0;
-        --border-light: #f1f5f9;
-        --primary: #3b82f6;
-        --primary-dark: #2563eb;
-        --primary-light: #dbeafe;
-        --success: #10b981;
-        --success-light: #d1fae5;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }}
-    
-    /* Dark Mode Variables */
-    .dark-mode {{
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #64748b;
-        --border: #334155;
-        --border-light: #1e293b;
-        --primary: #60a5fa;
-        --primary-dark: #3b82f6;
-        --primary-light: #1e3a8a;
-        --success: #34d399;
-        --success-light: #064e3b;
-        --warning: #fbbf24;
-        --danger: #f87171;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-    }}
-    
-    /* Apply variables */
-    .stApp {{
-        background: var(--bg-primary);
-        transition: all 0.3s ease;
-    }}
-    
-    .block-container {{
-        max-width: 1400px !important;
-        padding: 2rem !important;
-    }}
-    
-    /* Typography */
-    h1, h2, h3 {{
-        color: var(--text-primary) !important;
-        font-weight: 700 !important;
-        letter-spacing: -0.02em !important;
-    }}
-    
-    h1 {{
-        font-size: 2.2rem !important;
-        background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent !important;
-    }}
-    
-    p, .stMarkdown, .stCaption, label {{
-        color: var(--text-secondary) !important;
-    }}
-    
-    /* Header Section */
-    .header-section {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border);
-    }}
-    
-    .logo-area {{
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }}
-    
-    .logo-icon {{
-        font-size: 3rem;
-        background: linear-gradient(135deg, var(--primary), #8b5cf6);
-        border-radius: 20px;
-        padding: 0.5rem;
-        display: inline-block;
-    }}
-    
-    /* Stats Grid */
-    .stats-container {{
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 1rem;
-        margin: 1.5rem 0;
-    }}
-    
-    .stat-box {{
-        background: var(--bg-secondary);
-        border-radius: 20px;
-        padding: 1.25rem;
-        text-align: center;
-        border: 1px solid var(--border);
-        transition: all 0.3s ease;
-    }}
-    
-    .stat-box:hover {{
-        transform: translateY(-4px);
-        border-color: var(--primary);
-        box-shadow: var(--shadow-lg);
-    }}
-    
-    .stat-label {{
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }}
-    
-    .stat-value {{
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        font-family: 'Monaco', monospace;
-    }}
-    
-    /* Session Cards */
-    .sessions-grid {{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin: 1.5rem 0;
-    }}
-    
-    .session-box {{
-        background: var(--bg-secondary);
-        border-radius: 24px;
-        overflow: hidden;
-        border: 1px solid var(--border);
-        transition: all 0.3s ease;
-    }}
-    
-    .session-box:hover {{
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-xl);
-    }}
-    
-    .session-title {{
-        padding: 1rem 1.25rem;
-        font-weight: 700;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 2px solid var(--border);
-    }}
-    
-    .session-title.work {{
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
-        color: var(--primary);
-    }}
-    
-    .session-title.break {{
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent);
-        color: var(--warning);
-    }}
-    
-    .session-item {{
-        display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 1.25rem;
-        border-bottom: 1px solid var(--border-light);
-        transition: background 0.2s ease;
-    }}
-    
-    .session-item:hover {{
-        background: var(--bg-tertiary);
-    }}
-    
-    .session-time {{
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-    }}
-    
-    .session-duration {{
-        font-weight: 700;
-        font-size: 0.85rem;
-    }}
-    
-    .session-duration.work {{
-        color: var(--primary);
-    }}
-    
-    .session-duration.break {{
-        color: var(--warning);
-    }}
-    
-    .live-tag {{
-        background: var(--success);
-        padding: 2px 8px;
-        border-radius: 20px;
-        font-size: 0.6rem;
-        font-weight: 700;
-        color: white;
-        margin-left: 0.5rem;
-        display: inline-block;
-    }}
-    
-    /* Logout Card */
-    .logout-card {{
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-        border-radius: 20px;
-        padding: 1.25rem;
-        text-align: center;
-        margin-top: 1.5rem;
-        border: 1px solid var(--border);
-    }}
-    
-    .logout-label {{
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }}
-    
-    .logout-time {{
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--primary);
-        font-family: monospace;
-    }}
-    
-    .success-card {{
-        background: linear-gradient(135deg, var(--success), #059669);
-        border-radius: 20px;
-        padding: 1.25rem;
-        text-align: center;
-        margin-top: 1.5rem;
-        animation: pulse 0.5s ease-out;
-    }}
-    
-    .success-card p {{
-        color: white !important;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin: 0;
-    }}
-    
-    @keyframes pulse {{
-        0% {{ transform: scale(0.95); opacity: 0; }}
-        100% {{ transform: scale(1); opacity: 1; }}
-    }}
-    
-    /* Text Area */
-    .stTextArea textarea {{
-        background: var(--bg-secondary) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 16px !important;
-        color: var(--text-primary) !important;
-        font-size: 0.85rem !important;
-        font-family: 'Monaco', monospace !important;
-    }}
-    
-    .stTextArea textarea:focus {{
-        border-color: var(--primary) !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-    }}
-    
-    /* Buttons */
-    .stButton > button {{
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 40px !important;
-        padding: 0.6rem 1.5rem !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        width: 100% !important;
-    }}
-    
-    .stButton > button:hover {{
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-    }}
-    
-    /* Theme Toggle Button */
-    .theme-btn {{
-        background: var(--bg-secondary) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text-primary) !important;
-        border-radius: 40px !important;
-        padding: 0.5rem 1.2rem !important;
-        font-size: 0.85rem !important;
-    }}
-    
-    /* Radio Buttons - Day Type */
-    .stRadio > div {{
-        gap: 0.75rem;
-        background: var(--bg-secondary);
-        padding: 0.5rem;
-        border-radius: 60px;
-        border: 1px solid var(--border);
-        display: inline-flex;
-    }}
-    
-    .stRadio label {{
-        background: transparent !important;
-        padding: 0.5rem 1.5rem !important;
-        border-radius: 40px !important;
-        font-weight: 600 !important;
-        color: var(--text-secondary) !important;
-    }}
-    
-    .stRadio label:hover {{
-        color: var(--primary) !important;
-    }}
-    
-    /* Tabs */
-    [data-testid="stTabs"] [role="tablist"] {{
-        gap: 0.5rem;
-        background: var(--bg-secondary);
-        border-radius: 60px;
-        padding: 0.5rem;
-        border: 1px solid var(--border);
-    }}
-    
-    [data-testid="stTabs"] [role="tab"] {{
-        border-radius: 40px !important;
-        padding: 0.5rem 1.5rem !important;
-        font-weight: 600 !important;
-        color: var(--text-secondary) !important;
-    }}
-    
-    [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-        color: white !important;
-    }}
-    
-    [data-testid="stTabs"] [role="tabpanel"] {{
-        padding-top: 1.5rem;
-    }}
-    
-    /* Alerts */
-    .stAlert {{
-        border-radius: 16px !important;
-        border: none !important;
-    }}
-    
-    /* Scrollbar */
-    ::-webkit-scrollbar {{
-        width: 8px;
-        height: 8px;
-    }}
-    
-    ::-webkit-scrollbar-track {{
-        background: var(--bg-tertiary);
-        border-radius: 10px;
-    }}
-    
-    ::-webkit-scrollbar-thumb {{
-        background: var(--primary);
-        border-radius: 10px;
-    }}
-    
-    /* Divider */
-    hr {{
-        margin: 1.5rem 0;
-        border-color: var(--border);
-    }}
-    
-    /* Info text */
-    .info-text {{
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 0.5rem;
-    }}
-    </style>
-    
-    <script>
-        document.body.className = '{theme_class}';
-    </script>
-    """,
-    unsafe_allow_html=True,
-)
+# ============================================================================
+# CSS - Properly escaped to avoid f-string issues
+# ============================================================================
+
+css_code = """
+<style>
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+/* Light Mode Variables */
+.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #dbeafe;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --border: #334155;
+    --border-light: #1e293b;
+    --primary: #60a5fa;
+    --primary-dark: #3b82f6;
+    --primary-light: #1e3a8a;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Apply variables */
+.stApp {
+    background: var(--bg-primary);
+    transition: all 0.3s ease;
+}
+
+.block-container {
+    max-width: 1400px !important;
+    padding: 2rem !important;
+}
+
+/* Typography */
+h1, h2, h3 {
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+}
+
+h1 {
+    font-size: 2.2rem !important;
+    background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+
+p, .stMarkdown, .stCaption, label {
+    color: var(--text-secondary) !important;
+}
+
+/* Logo */
+.logo-icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    border-radius: 20px;
+    padding: 0.5rem;
+    display: inline-block;
+}
+
+/* Stats Grid */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-box {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Monaco', monospace;
+}
+
+/* Session Cards */
+.sessions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.session-box {
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.session-box:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.session-title {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border);
+}
+
+.session-title.work {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
+    color: var(--primary);
+}
+
+.session-title.break {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent);
+    color: var(--warning);
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.2s ease;
+}
+
+.session-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.session-time {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.session-duration {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.session-duration.work {
+    color: var(--primary);
+}
+
+.session-duration.break {
+    color: var(--warning);
+}
+
+.live-tag {
+    background: var(--success);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: white;
+    margin-left: 0.5rem;
+    display: inline-block;
+}
+
+/* Logout Card */
+.logout-card {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border-radius: 20px;
+    padding: 1.25rem;
+    text-align: center;
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.logout-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.logout-time {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    font-family: monospace;
+}
+
+.success-card {
+    background: linear-gradient(135deg, var(--success), #059669);
+    border-radius: 20px;
+    padding: 1.25rem;
+    text-align: center;
+    margin-top: 1.5rem;
+    animation: pulse 0.5s ease-out;
+}
+
+.success-card p {
+    color: white !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Text Area */
+.stTextArea textarea {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    color: var(--text-primary) !important;
+    font-size: 0.85rem !important;
+    font-family: 'Monaco', monospace !important;
+}
+
+.stTextArea textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 40px !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Radio Buttons */
+.stRadio > div {
+    gap: 0.75rem;
+    background: var(--bg-secondary);
+    padding: 0.5rem;
+    border-radius: 60px;
+    border: 1px solid var(--border);
+    display: inline-flex;
+}
+
+.stRadio label {
+    background: transparent !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 40px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+}
+
+.stRadio label:hover {
+    color: var(--primary) !important;
+}
+
+/* Tabs */
+[data-testid="stTabs"] [role="tablist"] {
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 60px;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+}
+
+[data-testid="stTabs"] [role="tab"] {
+    border-radius: 40px !important;
+    padding: 0.5rem 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: white !important;
+}
+
+[data-testid="stTabs"] [role="tabpanel"] {
+    padding-top: 1.5rem;
+}
+
+/* Alerts */
+.stAlert {
+    border-radius: 16px !important;
+    border: none !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* Divider */
+hr {
+    margin: 1.5rem 0;
+    border-color: var(--border);
+}
+</style>
+
+<script>
+    document.body.className = '""" + st.session_state.theme_mode + """-mode';
+</script>
+"""
+
+st.markdown(css_code, unsafe_allow_html=True)
 
 
 # ── Utility functions ──────────────────────────────────────────────────────────
@@ -603,27 +566,25 @@ def render_stats_grid(stats: dict):
 
 
 def render_sessions_panel(work: list, breaks: list):
-    # Build work HTML
     work_html = ""
     for s in work:
         live_tag = '<span class="live-tag">LIVE</span>' if s.get("ongoing") else ""
         work_html += f'''
             <div class="session-item">
-                <span class="session-time">{s["start"]} → {s["end"]}{live_tag}</span>
-                <span class="session-duration work">{s["human"]}</span>
+                <span class="session-time">{s['start']} → {s['end']}{live_tag}</span>
+                <span class="session-duration work">{s['human']}</span>
             </div>
         '''
     
     if not work_html:
         work_html = '<div class="session-item"><span class="session-time">No work sessions</span></div>'
     
-    # Build break HTML
     break_html = ""
     for s in breaks:
         break_html += f'''
             <div class="session-item">
-                <span class="session-time">{s["start"]} → {s["end"]}</span>
-                <span class="session-duration break">{s["human"]}</span>
+                <span class="session-time">{s['start']} → {s['end']}</span>
+                <span class="session-duration break">{s['human']}</span>
             </div>
         '''
     
@@ -661,13 +622,11 @@ def render_logout_status(deadline: dt.datetime, first: dt.datetime, now: dt.date
             """,
             unsafe_allow_html=True
         )
-        return True
     else:
         st.markdown(
             '<div class="success-card"><p>🎉 TARGET COMPLETED! You\'re Free to Go! 🎉</p></div>',
             unsafe_allow_html=True
         )
-        return False
 
 
 # ── Dashboard Components ───────────────────────────────────────────────────────
@@ -693,8 +652,7 @@ def member_dashboard(points: list, day_type: str):
     
     render_stats_grid(stats)
     
-    # Show/hide sessions button - always show when there's an active session
-    show_key = f"show_member_sessions_{id(points)}"
+    show_key = f"show_member_sessions"
     if result["has_ongoing"]:
         if st.button("📋 Show/Hide Session Details", use_container_width=True, key=show_key):
             st.session_state[show_key] = not st.session_state.get(show_key, False)
@@ -702,7 +660,6 @@ def member_dashboard(points: list, day_type: str):
         if st.session_state.get(show_key, False):
             render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
-    # Logout status
     render_logout_status(deadline, points[0], now)
 
 
@@ -727,8 +684,7 @@ def leader_dashboard(points: list, day_type: str):
     
     render_stats_grid(stats)
     
-    # Show/hide sessions button - always show when there's an active session
-    show_key = f"show_leader_sessions_{id(points)}"
+    show_key = f"show_leader_sessions"
     if result["has_ongoing"]:
         if st.button("📋 Show/Hide Session Details", use_container_width=True, key=show_key):
             st.session_state[show_key] = not st.session_state.get(show_key, False)
@@ -736,7 +692,6 @@ def leader_dashboard(points: list, day_type: str):
         if st.session_state.get(show_key, False):
             render_sessions_panel(result["work_sessions"], result["break_sessions"])
     
-    # Logout status
     render_logout_status(deadline, points[0], now)
 
 
@@ -797,9 +752,8 @@ st.caption(f"📍 Pune, India (IST) • {now_pune().strftime('%A, %d %B %Y • %
 
 tab1, tab2 = st.tabs(["👤 TEAM MEMBER", "👑 TEAM LEADER"])
 
-# ==================== TEAM MEMBER TAB ====================
+# TEAM MEMBER TAB
 with tab1:
-    # Day Type Selection
     member_day = st.radio(
         "Select Day Type",
         DAY_TYPE_OPTIONS,
@@ -812,7 +766,6 @@ with tab1:
         st.session_state.member_day_type = member_day
         st.query_params[MEMBER_DAY_QUERY] = member_day
     
-    # Input Form
     with st.form("member_form"):
         log = st.text_area(
             "Biometric Log",
@@ -838,9 +791,8 @@ with tab1:
     member_live()
 
 
-# ==================== TEAM LEADER TAB ====================
+# TEAM LEADER TAB
 with tab2:
-    # Day Type Selection
     leader_day = st.radio(
         "Select Day Type",
         DAY_TYPE_OPTIONS,
@@ -853,7 +805,6 @@ with tab2:
         st.session_state.leader_day_type = leader_day
         st.query_params[LEADER_DAY_QUERY] = leader_day
     
-    # Input Form
     with st.form("leader_form"):
         log = st.text_area(
             "Biometric Log",
