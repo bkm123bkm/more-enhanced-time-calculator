@@ -7,10 +7,10 @@ import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parent
 ICON_PATH = BASE_DIR / "Icon.png"
-PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⚡"
+PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⏱️"
 PUNE_TZ = ZoneInfo("Asia/Kolkata")
 
-# Widget keys (Streamlit-owned). Never assign programmatically to these keys.
+# Widget keys
 MEMBER_DAY_WIDGET_KEY = "_ui_member_day_type"
 LEADER_DAY_WIDGET_KEY = "_ui_leader_day_type"
 MEMBER_PASTE_WIDGET_KEY = "_ui_member_paste"
@@ -30,64 +30,62 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+
 # ============================================================================
-# COMPLETE REDESIGN - MODERN DARK/LIGHT THEME WITH GLASSMORPHISM
+# COMPLETE MODERN REDESIGN WITH GLASSMORPHISM
 # ============================================================================
 
 st.markdown(
     """
     <style>
-    /* ========== CSS RESET & VARIABLES ========== */
+    /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
     
     * {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     
-    /* ========== THEME VARIABLES ========== */
-    [data-theme="light"] {
-        --bg-primary: #f8fafc;
+    /* Theme Variables - Light Mode (Default) */
+    :root {
+        --bg-primary: #f0f4f8;
         --bg-secondary: #ffffff;
-        --bg-glass: rgba(255, 255, 255, 0.75);
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --text-muted: #94a3b8;
+        --bg-glass: rgba(255, 255, 255, 0.85);
+        --text-primary: #1a1a2e;
+        --text-secondary: #4a5568;
+        --text-muted: #718096;
         --border: #e2e8f0;
-        --border-glow: rgba(99, 102, 241, 0.15);
-        --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+        --border-glow: rgba(79, 70, 229, 0.15);
+        --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         --accent: #6366f1;
         --accent-dark: #4f46e5;
-        --accent-glow: rgba(99, 102, 241, 0.25);
+        --accent-glow: rgba(99, 102, 241, 0.2);
         --success: #10b981;
         --warning: #f59e0b;
-        --danger: #ef4444;
         --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
     
+    /* Dark Mode Styles */
     [data-theme="dark"] {
         --bg-primary: #0f172a;
         --bg-secondary: #1e293b;
-        --bg-glass: rgba(30, 41, 59, 0.8);
+        --bg-glass: rgba(30, 41, 59, 0.85);
         --text-primary: #f1f5f9;
         --text-secondary: #cbd5e1;
-        --text-muted: #64748b;
+        --text-muted: #94a3b8;
         --border: #334155;
         --border-glow: rgba(99, 102, 241, 0.2);
-        --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4);
+        --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         --accent: #818cf8;
         --accent-dark: #6366f1;
-        --accent-glow: rgba(129, 140, 248, 0.3);
-        --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --accent-glow: rgba(129, 140, 248, 0.25);
     }
     
-    /* ========== GLOBAL STYLES ========== */
+    /* Global Styles */
     .stApp {
         background: var(--bg-primary);
-        transition: all 0.3s ease;
+        transition: background 0.3s ease;
     }
     
     .block-container {
@@ -95,138 +93,86 @@ st.markdown(
         padding: 1.5rem 2rem !important;
     }
     
-    /* ========== ANIMATIONS ========== */
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+    /* Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    @keyframes pulse-ring {
-        0% { transform: scale(0.8); opacity: 0.5; }
-        100% { transform: scale(1.4); opacity: 0; }
-    }
-    
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
-    
-    @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes slideInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+    @keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
     }
     
     @keyframes scaleIn {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
     }
     
-    /* ========== TYPOGRAPHY ========== */
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+    
+    /* Typography - Ensure all text is visible */
     h1, h2, h3, h4, h5, h6 {
         font-weight: 700 !important;
         letter-spacing: -0.02em !important;
-        background: var(--gradient-1);
+        color: var(--text-primary) !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    h1 {
+        font-size: 2.5rem !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent !important;
     }
     
-    h1 {
-        font-size: 2.8rem !important;
-        margin-bottom: 0.25rem !important;
+    p, span, div, label, .stMarkdown, .stCaption, .stText {
+        color: var(--text-secondary) !important;
     }
     
-    /* ========== GLASS CARD COMPONENTS ========== */
-    .glass-card {
-        background: var(--bg-glass);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 24px;
-        border: 1px solid var(--border);
-        box-shadow: var(--card-shadow);
-        padding: 1.5rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .glass-card:hover {
-        transform: translateY(-4px);
-        border-color: var(--accent);
-        box-shadow: 0 25px 40px -12px rgba(99, 102, 241, 0.2);
-    }
-    
-    /* ========== METRIC CARDS ========== */
+    /* Metric Cards */
     div[data-testid="stMetric"] {
         background: var(--bg-glass) !important;
-        backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(10px);
         border: 1px solid var(--border) !important;
         border-radius: 20px !important;
         padding: 1rem 1.25rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.3s ease !important;
         animation: scaleIn 0.4s ease-out forwards;
         opacity: 0;
     }
     
     div[data-testid="stMetric"]:hover {
-        transform: translateY(-4px) scale(1.02);
+        transform: translateY(-4px);
         border-color: var(--accent) !important;
         box-shadow: 0 20px 35px -12px var(--accent-glow) !important;
     }
     
-    div[data-testid="stMetricLabel"] {
+    div[data-testid="stMetricLabel"] p {
         font-size: 0.75rem !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
-        color: var(--text-secondary) !important;
+        color: var(--text-muted) !important;
     }
     
-    div[data-testid="stMetricValue"] {
+    div[data-testid="stMetricValue"] p {
         font-size: 1.8rem !important;
         font-weight: 800 !important;
-        background: var(--gradient-1);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent !important;
     }
     
-    /* ========== TEXT AREA ========== */
+    /* Text Area */
     .stTextArea textarea {
         background: var(--bg-glass) !important;
-        backdrop-filter: blur(8px) !important;
+        backdrop-filter: blur(8px);
         border: 1px solid var(--border) !important;
         border-radius: 16px !important;
         color: var(--text-primary) !important;
@@ -241,35 +187,37 @@ st.markdown(
         outline: none !important;
     }
     
-    /* ========== BUTTONS ========== */
-    .stButton > button,
-    .stFormSubmitButton > button {
-        background: var(--gradient-1) !important;
+    .stTextArea textarea::placeholder {
+        color: var(--text-muted) !important;
+    }
+    
+    /* Buttons */
+    .stButton > button, .stFormSubmitButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 40px !important;
         padding: 0.6rem 1.5rem !important;
         font-weight: 600 !important;
         font-size: 0.9rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 15px var(--accent-glow) !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
     }
     
-    .stButton > button:hover,
-    .stFormSubmitButton > button:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 8px 25px var(--accent-glow) !important;
+    .stButton > button:hover, .stFormSubmitButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px var(--accent-glow) !important;
     }
     
     .stButton > button:active {
-        transform: translateY(0) scale(0.98);
+        transform: translateY(0);
     }
     
-    /* ========== TABS ========== */
+    /* Tabs */
     [data-testid="stTabs"] [role="tablist"] {
         gap: 0.5rem !important;
         background: var(--bg-glass) !important;
-        backdrop-filter: blur(8px) !important;
+        backdrop-filter: blur(8px);
         border-radius: 60px !important;
         padding: 0.5rem !important;
         border: 1px solid var(--border) !important;
@@ -283,18 +231,23 @@ st.markdown(
         transition: all 0.2s ease !important;
     }
     
+    [data-testid="stTabs"] [role="tab"]:hover {
+        color: var(--accent) !important;
+        background: rgba(99, 102, 241, 0.1) !important;
+    }
+    
     [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-        background: var(--gradient-1) !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: white !important;
         box-shadow: 0 4px 12px var(--accent-glow) !important;
     }
     
     [data-testid="stTabs"] [role="tabpanel"] {
-        animation: slideInUp 0.4s ease-out;
+        animation: fadeInUp 0.4s ease-out;
         padding-top: 1.5rem;
     }
     
-    /* ========== RADIO BUTTONS ========== */
+    /* Radio Buttons */
     [data-testid="stRadio"] {
         background: var(--bg-glass);
         backdrop-filter: blur(8px);
@@ -309,18 +262,23 @@ st.markdown(
         padding: 0.4rem 1.2rem !important;
         font-weight: 500 !important;
         transition: all 0.2s ease !important;
+        color: var(--text-secondary) !important;
+    }
+    
+    [data-testid="stRadio"] label:hover {
+        color: var(--accent) !important;
     }
     
     [data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
         background-color: transparent !important;
     }
     
-    /* ========== INFO/SUCCESS/ERROR ALERTS ========== */
+    /* Alerts */
     div[data-testid="stAlert"] {
         border-radius: 16px !important;
         border: none !important;
-        backdrop-filter: blur(8px) !important;
-        animation: slideInLeft 0.3s ease-out !important;
+        backdrop-filter: blur(8px);
+        animation: fadeInLeft 0.3s ease-out !important;
     }
     
     div[data-testid="stAlert"]:has(svg[data-testid="stAlertInfo"]) {
@@ -338,7 +296,11 @@ st.markdown(
         border-left: 4px solid #ef4444 !important;
     }
     
-    /* ========== SESSION PANEL ========== */
+    div[data-testid="stAlert"] p {
+        color: var(--text-primary) !important;
+    }
+    
+    /* Session Panel */
     .session-panel {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -353,7 +315,7 @@ st.markdown(
         border: 1px solid var(--border);
         overflow: hidden;
         transition: all 0.3s ease;
-        animation: slideInUp 0.4s ease-out;
+        animation: fadeInUp 0.4s ease-out;
     }
     
     .session-card:hover {
@@ -418,16 +380,17 @@ st.markdown(
         font-weight: 700;
         color: white;
         margin-left: 0.5rem;
+        display: inline-block;
     }
     
-    /* ========== HOORAY BANNER ========== */
+    /* Hooray Banner */
     .hooray-banner {
         background: linear-gradient(135deg, #10b981, #059669);
         border-radius: 20px;
         padding: 1rem 1.5rem;
         text-align: center;
-        animation: pulse-ring 2s infinite;
         margin-top: 1rem;
+        animation: pulse 0.6s ease-out;
     }
     
     .hooray-banner p {
@@ -437,7 +400,7 @@ st.markdown(
         margin: 0;
     }
     
-    /* ========== SUMMARY BOX ========== */
+    /* Summary Box */
     .summary-box {
         background: var(--bg-glass);
         backdrop-filter: blur(12px);
@@ -448,19 +411,23 @@ st.markdown(
         line-height: 1.8;
     }
     
-    /* ========== CAPTION ========== */
+    .summary-box strong {
+        color: var(--text-primary);
+    }
+    
+    /* Caption */
     .stCaption {
         color: var(--text-muted) !important;
         font-size: 0.8rem !important;
     }
     
-    /* ========== DIVIDER ========== */
+    /* Divider */
     hr {
-        margin: 1.5rem 0;
+        margin: 1rem 0;
         border-color: var(--border);
     }
     
-    /* ========== SCROLLBAR ========== */
+    /* Scrollbar */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -507,15 +474,7 @@ def format_clock(total_seconds: int) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}"
 
 
-def format_hours_minutes(total_seconds: int) -> str:
-    total_seconds = max(total_seconds, 0)
-    h = total_seconds // 3_600
-    m = (total_seconds % 3_600) // 60
-    return f"{h}h {m:02d}m"
-
-
 def format_human(total_seconds: int) -> str:
-    """Plain English duration: '8 hrs 50 mins'"""
     total_seconds = max(total_seconds, 0)
     h = total_seconds // 3_600
     m = (total_seconds % 3_600) // 60
@@ -533,21 +492,16 @@ DAY_FULL = "Full Day"
 DAY_HALF = "Half Day"
 DAY_TYPE_OPTIONS = (DAY_FULL, DAY_HALF)
 
-# Team Member: minimum total logged time (work + breaks on site)
 MEMBER_THRESHOLDS: dict[str, int] = {
     DAY_FULL: hms_to_seconds(7, 30, 0),
     DAY_HALF: hms_to_seconds(4, 30, 0),
 }
-# Team Leader: minimum login / work time
 LEADER_THRESHOLDS: dict[str, int] = {
     DAY_FULL: hms_to_seconds(7, 0, 0),
     DAY_HALF: hms_to_seconds(4, 0, 0),
 }
-# Break allowance for Team Member
 MEMBER_BREAK_TARGET = hms_to_seconds(1, 30, 0)
 
-
-# ── Threshold helpers ──────────────────────────────────────────────────────────
 
 def member_threshold_seconds(day_type: str) -> int:
     return MEMBER_THRESHOLDS.get(day_type, MEMBER_THRESHOLDS[DAY_FULL])
@@ -557,16 +511,7 @@ def leader_threshold_seconds(day_type: str) -> int:
     return LEADER_THRESHOLDS.get(day_type, LEADER_THRESHOLDS[DAY_FULL])
 
 
-def min_duration_from_first_entry(day_type: str, *, role: str) -> dt.timedelta:
-    if role == "member":
-        sec = member_threshold_seconds(day_type)
-    else:
-        sec = leader_threshold_seconds(day_type)
-    return dt.timedelta(seconds=sec)
-
-
 def format_logout_at_display(first_entry: dt.datetime, deadline: dt.datetime) -> str:
-    """12hr format; adds date if logout rolls past first-entry calendar day."""
     if deadline.date() == first_entry.date():
         return deadline.strftime("%I:%M %p").lstrip("0")
     return deadline.strftime("%d-%b %I:%M %p").lstrip("0")
@@ -582,14 +527,13 @@ def render_logout_eligibility_status(
     else:
         st.markdown(
             '<div class="hooray-banner">'
-            "<p>🎉 Target Completed! You’re Free to Go!! 🎉</p>"
+            "<p>🎉 Target Completed! You're Free to Go!! 🎉</p>"
             "</div>",
             unsafe_allow_html=True,
         )
 
 
 def render_summary(result: dict) -> None:
-    """Human-readable work & break summary box."""
     total_work = result["total_work"] + result["ongoing_work"]
     total_break = result["total_break"]
     total_time = total_work + total_break
@@ -610,7 +554,6 @@ def render_summary(result: dict) -> None:
 
 
 def render_session_panel(result: dict) -> None:
-    """Premium side-by-side work & break session breakdown."""
     work_data = result.get("work_sessions_data", [])
     break_data = result.get("break_sessions_data", [])
 
@@ -666,7 +609,6 @@ def render_team_member_dashboard(
     first_entry: dt.datetime,
     now: dt.datetime,
 ) -> None:
-    """Team Member: logout when net work time (excluding breaks) >= threshold."""
     required_work_secs = member_threshold_seconds(day_type)
     total_work = result["total_work"] + result["ongoing_work"]
     total_break = result["total_break"]
@@ -704,7 +646,6 @@ def render_team_leader_dashboard(
     first_entry: dt.datetime,
     now: dt.datetime,
 ) -> None:
-    """Team Leader: logout when net work time (excluding breaks) >= threshold."""
     required_work_secs = leader_threshold_seconds(day_type)
     total_work = result["total_work"] + result["ongoing_work"]
     total_break = result["total_break"]
@@ -784,10 +725,6 @@ def summarize_sessions(
         start_dt = time_points[idx]
         end_dt = time_points[idx + 1]
         seconds = int((end_dt - start_dt).total_seconds())
-        session_text = (
-            f"{start_dt.strftime('%Y-%m-%d %H:%M')} -> "
-            f"{end_dt.strftime('%Y-%m-%d %H:%M')} - {format_short(seconds)}"
-        )
         session_data = {
             "start": start_dt.strftime("%d-%b %H:%M"),
             "end": end_dt.strftime("%d-%b %H:%M"),
@@ -795,25 +732,20 @@ def summarize_sessions(
             "human": format_human(seconds),
         }
         if idx % 2 == 0:
-            work_sessions.append(session_text)
+            work_sessions.append(str(session_data))
             work_sessions_data.append(session_data)
             total_work += seconds
         else:
-            break_sessions.append(session_text)
+            break_sessions.append(str(session_data))
             break_sessions_data.append(session_data)
             total_break += seconds
 
-    # Odd number of punches = active work session ongoing
     if len(time_points) % 2 == 1:
         current_time = current_time or now_pune()
         if current_time < time_points[-1]:
             current_time += dt.timedelta(days=1)
         ongoing_work = int((current_time - time_points[-1]).total_seconds())
-        ongoing_work_text = (
-            f"{time_points[-1].strftime('%Y-%m-%d %H:%M')} -> "
-            f"{current_time.strftime('%Y-%m-%d %H:%M')} - {format_short(ongoing_work)} "
-            "(ongoing)"
-        )
+        ongoing_work_text = "(ongoing)"
         work_sessions_data.append({
             "start": time_points[-1].strftime("%d-%b %H:%M"),
             "end": current_time.strftime("%d-%b %H:%M"),
@@ -846,12 +778,13 @@ def persist_leader_day_query() -> None:
     st.query_params[LEADER_DAY_QUERY] = st.session_state.leader_day_type
 
 
-# ── Live dashboard fragments (auto-refresh every 1s) ──────────────────────────
+# ── Live dashboard fragments ──────────────────────────────────────────
 
 @st.fragment(run_every="1s")
 def member_live_dashboard() -> None:
     pts = st.session_state.get("member_biometric_points")
     if not pts:
+        st.info("👈 Paste biometric log and click 'Calculate Times' to see live dashboard")
         return
     now = now_pune()
     result = summarize_sessions(pts, current_time=now)
@@ -863,6 +796,7 @@ def member_live_dashboard() -> None:
 def leader_live_dashboard() -> None:
     pts = st.session_state.get("leader_biometric_points")
     if not pts:
+        st.info("👈 Paste biometric log and click 'Calculate Times' to see live dashboard")
         return
     now = now_pune()
     result = summarize_sessions(pts, current_time=now)
@@ -902,7 +836,6 @@ if "theme_mode" not in st.session_state:
 
 # ── Page layout ───────────────────────────────────────────────────────────────
 
-# Premium animated logo
 LOGO_SVG = """
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -918,28 +851,15 @@ LOGO_SVG = """
   <circle cx="24" cy="24" r="22" fill="url(#logoGrad1)" opacity="0.15"/>
   <circle cx="24" cy="24" r="18" stroke="url(#logoGrad1)" stroke-width="2" fill="none"/>
   <circle cx="24" cy="24" r="12" fill="url(#logoGrad2)" opacity="0.8"/>
-  <text x="24" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="800" font-family="Arial">C</text>
+  <text x="24" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="800" font-family="Arial, sans-serif">C</text>
 </svg>
 """
 
-# Theme-aware CSS injection
-_tm = st.session_state.theme_mode
-_is_dark = _tm == "dark"
+# Inject theme attribute
+theme_attr = 'data-theme="dark"' if st.session_state.theme_mode == "dark" else 'data-theme="light"'
+st.markdown(f'<body {theme_attr}></body>', unsafe_allow_html=True)
 
-# Inject theme attribute on body
-st.markdown(
-    f"""
-    <script>
-        document.body.setAttribute('data-theme', '{"dark" if _is_dark else "light"}');
-    </script>
-    <style>
-        body {{ background: var(--bg-primary); }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Scroll to top on every page load/refresh
+# Scroll to top
 st.markdown(
     """<script>
     (function() {
@@ -957,7 +877,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Header row: icon | title | spacer | theme toggle ──────────────────────────
+# Header
 hdr_icon, hdr_title, hdr_spacer, hdr_toggle = st.columns([1, 9, 2, 2], vertical_alignment="center")
 
 with hdr_icon:
@@ -967,7 +887,8 @@ with hdr_title:
     st.title("Chronos")
 
 with hdr_toggle:
-    toggle_label = "☀️ Light" if _is_dark else "🌙 Dark"
+    _is_dark = st.session_state.theme_mode == "dark"
+    toggle_label = "🌙 Dark" if not _is_dark else "☀️ Light"
     if st.button(toggle_label, key="btn_theme_toggle", use_container_width=True):
         st.session_state.theme_mode = "light" if _is_dark else "dark"
         st.rerun()
@@ -996,7 +917,7 @@ with tab_member_in:
             "Team Member biometric log paste",
             height=170,
             label_visibility="collapsed",
-            placeholder="Biometric.\n01:55\nBiometric.\n01:56\nBiometric.\n01:58\n...",
+            placeholder="Paste your biometric log here...\nExample:\n09:15\n13:00\n14:00\n18:30",
             key=MEMBER_PASTE_WIDGET_KEY,
         )
         member_submitted = st.form_submit_button("Calculate Times", use_container_width=True)
@@ -1008,6 +929,7 @@ with tab_member_in:
             st.session_state.member_biometric_points = None
         else:
             st.session_state.member_biometric_points = list(parsed)
+            st.success(f"✅ Successfully parsed {len(parsed)} time entries!")
 
     st.markdown("**Live Preview**")
     member_live_dashboard()
@@ -1027,7 +949,7 @@ with tab_leader_in:
             "Team Leader biometric log paste",
             height=170,
             label_visibility="collapsed",
-            placeholder="Biometric.\n01:55\nBiometric.\n01:56\nBiometric.\n01:58\n...",
+            placeholder="Paste your biometric log here...\nExample:\n09:15\n13:00\n14:00\n18:30",
             key=LEADER_PASTE_WIDGET_KEY,
         )
         leader_submitted = st.form_submit_button("Calculate Times", use_container_width=True)
@@ -1039,69 +961,7 @@ with tab_leader_in:
             st.session_state.leader_biometric_points = None
         else:
             st.session_state.leader_biometric_points = list(parsed)
+            st.success(f"✅ Successfully parsed {len(parsed)} time entries!")
 
     st.markdown("**Live Preview**")
     leader_live_dashboard()
-
-st.markdown("---")
-st.markdown("#### Feedback")
-
-
-def submit_feedback_to_sheets(feedback_text: str) -> bool:
-    """Append feedback + timestamp to the configured Google Sheet."""
-    try:
-        import gspread
-        from google.oauth2.service_account import Credentials
-
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ]
-        creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"], scopes=scopes
-        )
-        client = gspread.authorize(creds)
-        sheet = client.open_by_key(st.secrets["feedback_sheet"]["sheet_id"])
-        worksheet = sheet.worksheet(st.secrets["feedback_sheet"].get("worksheet", "Sheet1"))
-        timestamp = now_pune().strftime("%Y-%m-%d %H:%M:%S")
-        worksheet.append_row([timestamp, feedback_text])
-        return True
-    except Exception as e:
-        st.error(f"Could not save feedback: {e}")
-        return False
-
-
-# Use a counter-based key so we can reset the widget by changing its key
-if "feedback_reset_counter" not in st.session_state:
-    st.session_state.feedback_reset_counter = 0
-if "feedback_saved" not in st.session_state:
-    st.session_state.feedback_saved = False
-
-# Show success banner BEFORE text area (persists after rerun)
-if st.session_state.feedback_saved:
-    st.success("❤️ Thank you for your valuable feedback! Our team is actively working to make your experience even better.")
-    st.session_state.feedback_saved = False
-
-with st.form(key="feedback_form", clear_on_submit=True):
-    feedback_text = st.text_area(
-        "Share your feedback",
-        label_visibility="collapsed",
-        placeholder=(
-            "Want a new feature? Share it in the feedback form and include your Name/Email so our team can notify you once it’s implemented."
-        ),
-        height=100,
-    )
-    submitted = st.form_submit_button("Submit Feedback", use_container_width=True)
-
-if submitted:
-    stripped = (feedback_text or "").strip()
-    if not stripped:
-        st.warning("Please write something before submitting.")
-    else:
-        with st.spinner("Saving your feedback…"):
-            ok = submit_feedback_to_sheets(stripped)
-        if ok:
-            st.session_state.feedback_saved = True
-            st.rerun()
-        else:
-            st.error("❌ Could not save feedback. Please try again.")
