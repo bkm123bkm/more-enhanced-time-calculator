@@ -39,10 +39,10 @@ st.markdown(
     """
     <style>
     /* Import fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
     
     * {
-        font-family: 'Space Grotesk', system-ui, sans-serif !important;
+        font-family: 'Inter', system-ui, sans-serif !important;
     }
     
     /* Light Theme */
@@ -122,52 +122,6 @@ st.markdown(
         box-shadow: var(--hover-shadow);
     }
     
-    /* Role Header */
-    .role-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid var(--primary);
-    }
-    
-    .role-icon {
-        font-size: 32px;
-    }
-    
-    .role-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text);
-    }
-    
-    /* Day Type Toggle */
-    .day-toggle {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    
-    .day-option {
-        flex: 1;
-        text-align: center;
-        padding: 10px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        color: var(--text-2);
-        font-weight: 500;
-    }
-    
-    .day-option.active {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: white;
-    }
-    
     /* Stats Grid */
     .stats-grid {
         display: grid;
@@ -199,7 +153,7 @@ st.markdown(
     }
     
     .stat-value {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: var(--text);
         font-family: monospace;
@@ -270,6 +224,7 @@ st.markdown(
         font-weight: 600;
         color: white;
         margin-left: 8px;
+        display: inline-block;
     }
     
     /* Logout Info */
@@ -330,27 +285,23 @@ st.markdown(
         transform: translateY(-1px);
     }
     
-    /* Toggle Button */
-    .theme-toggle {
-        background: var(--surface) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text) !important;
-        border-radius: 40px !important;
-        padding: 8px 20px !important;
-        font-size: 0.85rem !important;
-    }
-    
     /* Radio Buttons */
     .stRadio > div {
         gap: 8px;
+        background: transparent !important;
     }
     
     .stRadio label {
         background: var(--surface-2);
-        padding: 8px 20px;
+        padding: 8px 24px;
         border-radius: 40px;
         border: 1px solid var(--border);
         color: var(--text-2);
+        font-weight: 500;
+    }
+    
+    .stRadio label:hover {
+        border-color: var(--primary);
     }
     
     /* Alerts */
@@ -372,6 +323,12 @@ st.markdown(
     ::-webkit-scrollbar-thumb {
         background: var(--primary);
         border-radius: 10px;
+    }
+    
+    /* Divider */
+    hr {
+        margin: 20px 0;
+        border-color: var(--border);
     }
     </style>
     """,
@@ -430,11 +387,11 @@ def extract_times(log_text: str) -> list[dt.datetime]:
     last = None
     
     for m in matches:
-        h, m = map(int, m.split(":"))
-        candidate = dt.datetime.combine(today, dt.time(h, m))
+        h, min_val = map(int, m.split(":"))
+        candidate = dt.datetime.combine(today, dt.time(h, min_val))
         if last and candidate < last:
             today += dt.timedelta(days=1)
-            candidate = dt.datetime.combine(today, dt.time(h, m))
+            candidate = dt.datetime.combine(today, dt.time(h, min_val))
         points.append(candidate)
         last = candidate
     
@@ -479,14 +436,14 @@ def analyze_sessions(points: list[dt.datetime], current: dt.datetime = None) -> 
             total_break += duration
     
     ongoing = 0
-    ongoing_text = None
+    has_ongoing = False
     
     if len(points) % 2 == 1:
         last = points[-1]
         if current < last:
             current += dt.timedelta(days=1)
         ongoing = int((current - last).total_seconds())
-        ongoing_text = "ongoing"
+        has_ongoing = True
         work_sessions.append({
             "start": last.strftime("%I:%M %p").lstrip("0"),
             "end": current.strftime("%I:%M %p").lstrip("0"),
@@ -501,7 +458,7 @@ def analyze_sessions(points: list[dt.datetime], current: dt.datetime = None) -> 
         "total_work": total_work,
         "total_break": total_break,
         "ongoing_work": ongoing,
-        "has_ongoing": ongoing_text is not None
+        "has_ongoing": has_ongoing
     }
 
 
@@ -532,26 +489,43 @@ def render_stats(stats: dict):
 
 
 def render_sessions(work: list, breaks: list):
-    work_html = "".join([
-        f'<div class="session-row"><span class="session-time">{s["start"]} → {s["end"]}{" <span class="live-badge">LIVE</span>" if s.get("ongoing") else ""}</span><span class="session-duration work">{s["human"]}</span></div>'
-        for s in work
-    ]) or '<div class="session-row"><span class="session-time">No sessions</span></div>'
+    # Build work sessions HTML
+    work_html_parts = []
+    for s in work:
+        ongoing_html = '<span class="live-badge">LIVE</span>' if s.get("ongoing") else ""
+        work_html_parts.append(
+            f'<div class="session-row">'
+            f'<span class="session-time">{s["start"]} → {s["end"]}{ongoing_html}</span>'
+            f'<span class="session-duration work">{s["human"]}</span>'
+            f'</div>'
+        )
     
-    break_html = "".join([
-        f'<div class="session-row"><span class="session-time">{s["start"]} → {s["end"]}</span><span class="session-duration break">{s["human"]}</span></div>'
-        for s in breaks
-    ]) or '<div class="session-row"><span class="session-time">No breaks</span></div>'
+    if not work_html_parts:
+        work_html_parts.append('<div class="session-row"><span class="session-time">No sessions</span></div>')
+    
+    # Build break sessions HTML
+    break_html_parts = []
+    for s in breaks:
+        break_html_parts.append(
+            f'<div class="session-row">'
+            f'<span class="session-time">{s["start"]} → {s["end"]}</span>'
+            f'<span class="session-duration break">{s["human"]}</span>'
+            f'</div>'
+        )
+    
+    if not break_html_parts:
+        break_html_parts.append('<div class="session-row"><span class="session-time">No breaks</span></div>')
     
     st.markdown(
         f"""
         <div class="session-panel">
             <div class="session-card">
                 <div class="session-header work">🕐 WORK · {len(work)} sessions</div>
-                {work_html}
+                {''.join(work_html_parts)}
             </div>
             <div class="session-card">
                 <div class="session-header break">☕ BREAK · {len(breaks)} sessions</div>
-                {break_html}
+                {''.join(break_html_parts)}
             </div>
         </div>
         """,
@@ -605,10 +579,10 @@ def member_dashboard(points: list, day_type: str):
     render_stats(stats)
     
     if result["has_ongoing"]:
-        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_{id(points)}"):
-            st.session_state[f"show_sessions_{id(points)}"] = not st.session_state.get(f"show_sessions_{id(points)}", False)
+        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_member"):
+            st.session_state.show_member_sessions = not st.session_state.get("show_member_sessions", False)
         
-        if st.session_state.get(f"show_sessions_{id(points)}", False):
+        if st.session_state.get("show_member_sessions", False):
             render_sessions(result["work_sessions"], result["break_sessions"])
     
     render_logout(deadline, points[0], now)
@@ -637,10 +611,10 @@ def leader_dashboard(points: list, day_type: str):
     render_stats(stats)
     
     if result["has_ongoing"]:
-        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_leader_{id(points)}"):
-            st.session_state[f"show_leader_sessions_{id(points)}"] = not st.session_state.get(f"show_leader_sessions_{id(points)}", False)
+        if st.button("📊 Show/Hide Session Details", use_container_width=True, key=f"toggle_leader"):
+            st.session_state.show_leader_sessions = not st.session_state.get("show_leader_sessions", False)
         
-        if st.session_state.get(f"show_leader_sessions_{id(points)}", False):
+        if st.session_state.get("show_leader_sessions", False):
             render_sessions(result["work_sessions"], result["break_sessions"])
     
     render_logout(deadline, points[0], now)
@@ -674,6 +648,10 @@ if "leader_points" not in st.session_state:
     st.session_state.leader_points = None
 if "theme" not in st.session_state:
     st.session_state.theme = "light"
+if "show_member_sessions" not in st.session_state:
+    st.session_state.show_member_sessions = False
+if "show_leader_sessions" not in st.session_state:
+    st.session_state.show_leader_sessions = False
 
 
 # ─── Theme ─────────────────────────────────────────────────────────────────────
@@ -707,33 +685,18 @@ tab1, tab2 = st.tabs(["👤 TEAM MEMBER", "👑 TEAM LEADER"])
 
 # ==================== TEAM MEMBER TAB ====================
 with tab1:
-    # Day Type Selection
-    col_a, col_b = st.columns([1, 1])
-    with col_a:
-        full_active = "active" if st.session_state.member_day_type == DAY_FULL else ""
-        half_active = "active" if st.session_state.member_day_type == DAY_HALF else ""
-        st.markdown(
-            f"""
-            <div class="day-toggle">
-                <div class="day-option {full_active}" onclick="parent.postMessage({{type: 'streamlit:setComponentValue', key: 'member_day_full', value: 'Full Day'}}, '*')">📅 Full Day<br><span style="font-size: 0.7rem;">7h 30m</span></div>
-                <div class="day-option {half_active}" onclick="parent.postMessage({{type: 'streamlit:setComponentValue', key: 'member_day_half', value: 'Half Day'}}, '*')">📆 Half Day<br><span style="font-size: 0.7rem;">4h 30m</span></div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    
-    # Radio fallback
-    day_type = st.radio(
-        "Day Type",
+    # Day Type Selection using Radio
+    member_day = st.radio(
+        "Select Day Type",
         DAY_TYPE_OPTIONS,
         index=0 if st.session_state.member_day_type == DAY_FULL else 1,
         horizontal=True,
         key="member_day_radio",
         label_visibility="collapsed"
     )
-    if day_type != st.session_state.member_day_type:
-        st.session_state.member_day_type = day_type
-        st.query_params[MEMBER_DAY_QUERY] = day_type
+    if member_day != st.session_state.member_day_type:
+        st.session_state.member_day_type = member_day
+        st.query_params[MEMBER_DAY_QUERY] = member_day
     
     # Input Form
     with st.form("member_form"):
@@ -764,22 +727,9 @@ with tab1:
 
 # ==================== TEAM LEADER TAB ====================
 with tab2:
-    # Day Type Selection
-    full_active = "active" if st.session_state.leader_day_type == DAY_FULL else ""
-    half_active = "active" if st.session_state.leader_day_type == DAY_HALF else ""
-    st.markdown(
-        f"""
-        <div class="day-toggle">
-            <div class="day-option {full_active}">📅 Full Day<br><span style="font-size: 0.7rem;">7h 00m</span></div>
-            <div class="day-option {half_active}">📆 Half Day<br><span style="font-size: 0.7rem;">4h 00m</span></div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
-    # Radio fallback
+    # Day Type Selection using Radio
     leader_day = st.radio(
-        "Day Type",
+        "Select Day Type",
         DAY_TYPE_OPTIONS,
         index=0 if st.session_state.leader_day_type == DAY_FULL else 1,
         horizontal=True,
