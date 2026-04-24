@@ -1,40 +1,42 @@
 import streamlit as st
-import datetime as dt
-import re
-from zoneinfo import ZoneInfo
+import streamlit.components.v1 as components
 
-# ---------------- CONFIG ----------------
-st.set_page_config(layout="wide", page_title="TimeTrack Pro")
+st.set_page_config(layout="wide")
 
-PUNE = ZoneInfo("Asia/Kolkata")
-
-# ---------------- STATE ----------------
-if "member_points" not in st.session_state:
-    st.session_state.member_points = None
-if "leader_points" not in st.session_state:
-    st.session_state.leader_points = None
-if "member_day" not in st.session_state:
-    st.session_state.member_day = "Full Day"
-if "leader_day" not in st.session_state:
-    st.session_state.leader_day = "Full Day"
-
-# ---------------- CSS (FULL REDESIGN) ----------------
+# REMOVE default Streamlit padding completely
 st.markdown("""
 <style>
+.block-container {
+    padding: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-body, .stApp {
+# === YOUR FULL HTML UI ===
+html_code = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    font-family:'Outfit', sans-serif;
     background: linear-gradient(135deg,#0f172a,#020617);
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
+    color:white;
 }
 
-/* Glass Card */
+/* Glass */
 .glass {
     background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(16px);
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    border-radius:20px;
+    padding:20px;
+    margin:20px;
 }
 
 /* Header */
@@ -42,198 +44,113 @@ body, .stApp {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
 }
 
-.title {
-    font-size:28px;
-    font-weight:700;
-}
-
-/* Buttons */
-.stButton>button {
-    background: linear-gradient(135deg,#6366f1,#8b5cf6);
+/* Button */
+.btn {
+    background:linear-gradient(135deg,#6366f1,#818cf8);
     border:none;
-    color:white;
+    padding:10px 20px;
     border-radius:12px;
-    padding:10px;
-    font-weight:600;
+    color:white;
+    cursor:pointer;
+}
+
+/* Tabs */
+.tabs {
+    display:flex;
+    gap:10px;
+    margin:20px;
+}
+.tab {
+    padding:10px 20px;
+    border-radius:10px;
+    background:#1e293b;
+    cursor:pointer;
+}
+.active {
+    background:#6366f1;
+}
+
+/* Cards */
+.card {
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+    margin:20px;
 }
 
 /* Textarea */
 textarea {
-    background:#020617 !important;
-    color:white !important;
+    width:100%;
+    height:120px;
+    border-radius:10px;
+    padding:10px;
+    background:#020617;
+    color:white;
+    border:none;
 }
 
 /* Stats */
 .stats {
-    display:grid;
-    grid-template-columns: repeat(5,1fr);
-    gap:15px;
-    margin-top:20px;
+    display:flex;
+    gap:20px;
 }
-
 .stat {
-    background: rgba(255,255,255,0.05);
-    padding:15px;
-    border-radius:16px;
+    flex:1;
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
     text-align:center;
 }
-
-.stat h3 {
-    font-size:12px;
-    color:#94a3b8;
-}
-
-.stat p {
-    font-size:20px;
-    font-weight:700;
-}
-
-/* Sessions */
-.session {
-    margin-top:20px;
-    padding:15px;
-    border-radius:16px;
-    background: rgba(255,255,255,0.05);
-}
-
 </style>
-""", unsafe_allow_html=True)
+</head>
 
-# ---------------- HELPERS ----------------
-def now():
-    return dt.datetime.now(PUNE).replace(tzinfo=None)
+<body>
 
-def parse(text):
-    matches = re.findall(r"\b\d{1,2}:\d{2}\b", text)
-    today = now().date()
-    pts = []
-    last = None
+<div class="glass header">
+    <h2>✨ TimeTrack Pro</h2>
+    <button class="btn" onclick="toggleTheme()">🌙 Dark Mode</button>
+</div>
 
-    for m in matches:
-        h,mn = map(int,m.split(":"))
-        t = dt.datetime.combine(today, dt.time(h,mn))
+<div class="tabs">
+    <div class="tab active">👤 Member</div>
+    <div class="tab">👑 Leader</div>
+</div>
 
-        if last and t < last:
-            today += dt.timedelta(days=1)
-            t = dt.datetime.combine(today, dt.time(h,mn))
+<div class="card">
+    <h3>📋 Paste Log</h3>
+    <textarea placeholder="09:15\n13:00\n14:00\n18:30"></textarea>
+    <br><br>
+    <button class="btn">Analyze</button>
+</div>
 
-        pts.append(t)
-        last = t
+<div class="stats">
+    <div class="stat">
+        <h4>Work</h4>
+        <p>05:20:00</p>
+    </div>
+    <div class="stat">
+        <h4>Break</h4>
+        <p>01:10:00</p>
+    </div>
+    <div class="stat">
+        <h4>Remaining</h4>
+        <p>02:10:00</p>
+    </div>
+</div>
 
-    return pts if pts else None
+<script>
+function toggleTheme(){
+    document.body.style.background =
+        document.body.style.background.includes("0f172a")
+        ? "linear-gradient(135deg,#f3f4f6,#e5e7eb)"
+        : "linear-gradient(135deg,#0f172a,#020617)";
+}
+</script>
 
-def format_time(sec):
-    h = sec//3600
-    m = (sec%3600)//60
-    s = sec%60
-    return f"{h:02d}:{m:02d}:{s:02d}"
+</body>
+</html>
+"""
 
-# ---------------- ANALYSIS ----------------
-def analyze(points):
-    work = 0
-    brk = 0
-
-    for i in range(len(points)-1):
-        d = int((points[i+1]-points[i]).total_seconds())
-        if i%2==0:
-            work += d
-        else:
-            brk += d
-
-    if len(points)%2==1:
-        work += int((now()-points[-1]).total_seconds())
-
-    return work, brk
-
-# ---------------- HEADER ----------------
-col1, col2 = st.columns([6,2])
-
-with col1:
-    st.markdown('<div class="title">✨ TimeTrack Pro</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown(f"<div style='text-align:right'>{now().strftime('%d %b %Y • %I:%M:%S %p')}</div>", unsafe_allow_html=True)
-
-# ---------------- TABS ----------------
-tab1, tab2 = st.tabs(["👤 Member", "👑 Leader"])
-
-# ---------------- MEMBER ----------------
-with tab1:
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-
-    st.session_state.member_day = st.radio(
-        "Day Type",
-        ["Full Day","Half Day"],
-        horizontal=True,
-        key="member_radio"
-    )
-
-    log = st.text_area("Log Input", height=120, key="member_log")
-
-    if st.button("Analyze", key="member_btn"):
-        pts = parse(log)
-        if pts:
-            st.session_state.member_points = pts
-
-    if st.session_state.member_points:
-        work, brk = analyze(st.session_state.member_points)
-
-        st.markdown('<div class="stats">', unsafe_allow_html=True)
-        for label, val in [
-            ("Work", work),
-            ("Break", brk),
-            ("Total", work+brk),
-            ("Remain Work", max(27000-work,0)),
-            ("Remain Break", max(5400-brk,0))
-        ]:
-            st.markdown(f"""
-            <div class="stat">
-            <h3>{label}</h3>
-            <p>{format_time(val)}</p>
-            </div>
-            """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ---------------- LEADER ----------------
-with tab2:
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-
-    st.session_state.leader_day = st.radio(
-        "Day Type",
-        ["Full Day","Half Day"],
-        horizontal=True,
-        key="leader_radio"
-    )
-
-    log = st.text_area("Log Input", height=120, key="leader_log")
-
-    if st.button("Analyze", key="leader_btn"):
-        pts = parse(log)
-        if pts:
-            st.session_state.leader_points = pts
-
-    if st.session_state.leader_points:
-        work, brk = analyze(st.session_state.leader_points)
-
-        st.markdown('<div class="stats">', unsafe_allow_html=True)
-        for label, val in [
-            ("Work", work),
-            ("Break", brk),
-            ("Total", work+brk),
-            ("Remain Work", max(25200-work,0)),
-            ("Remain Break", max(5400-brk,0))
-        ]:
-            st.markdown(f"""
-            <div class="stat">
-            <h3>{label}</h3>
-            <p>{format_time(val)}</p>
-            </div>
-            """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+components.html(html_code, height=900, scrolling=True)
