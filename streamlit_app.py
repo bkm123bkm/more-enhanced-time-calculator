@@ -1,121 +1,199 @@
-            st.markdown(f'<div class="stat-card"><div class="stat-label">{label}</div>'
-                        f'<div class="stat-value">{format_clock(value) if isinstance(value,int) else value}</div></div>',
-                        unsafe_allow_html=True)
+import datetime as dt
+import re
+from zoneinfo import ZoneInfo
+import streamlit as st
 
-def render_sessions(work:list, breaks:list):
-    st.markdown('<div class="sessions-panel">', unsafe_allow_html=True)
-    
-    # Work Sessions
-    st.markdown('<div class="session-card">', unsafe_allow_html=True)
-    st.markdown(f'<div class="session-header work">🕐 WORK SESSIONS · {len(work)}</div>', unsafe_allow_html=True)
-    if work:
-        for s in work:
-            live = '<span class="live-badge">LIVE</span>' if s.get("ongoing") else ""
-            st.markdown(f'<div class="session-row"><span>{s["start"]} → {s["end"]}{live}</span>'
-                        f'<span class="session-duration work">{s["human"]}</span></div>',
-                        unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="session-row">No work sessions</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Break Sessions
-    st.markdown('<div class="session-card">', unsafe_allow_html=True)
-    st.markdown(f'<div class="session-header break">☕ BREAK SESSIONS · {len(breaks)}</div>', unsafe_allow_html=True)
-    if breaks:
-        for s in breaks:
-            st.markdown(f'<div class="session-row"><span>{s["start"]} → {s["end"]}</span>'
-                        f'<span class="session-duration break">{s["human"]}</span></div>',
-                        unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="session-row">No breaks taken</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+# ---------------- CONFIG ----------------
+st.set_page_config(page_title="TimeTrack Pro", page_icon="⏱️", layout="wide")
 
-def render_logout(deadline:dt.datetime, first:dt.datetime, now:dt.datetime):
-    if now<deadline:
-        time_str = deadline.strftime("%I:%M %p").lstrip("0")
-        if deadline.date()!=first.date():
-            time_str = deadline.strftime("%d %b, %I:%M %p").lstrip("0")
-        st.markdown(f'<div class="logout-card"><div style="font-size:0.8rem;color:#64748b;">⏰ Earliest Logout Time</div>'
-                    f'<div class="logout-time">{time_str}</div></div>', unsafe_allow_html=True)
-    else:
-        st.markdown('<div class="success-banner"><p>🎉 TARGET COMPLETED! You\'re Free to Go! 🎉</p></div>', unsafe_allow_html=True)
+PUNE_TZ = ZoneInfo("Asia/Kolkata")
 
-def dashboard(points:list, day_type:str, leader=False):
+DAY_FULL = "Full Day"
+DAY_HALF = "Half Day"
+DAY_TYPE_OPTIONS = (DAY_FULL, DAY_HALF)
+
+MEMBER_THRESHOLDS = {DAY_FULL: 27000, DAY_HALF: 16200}
+LEADER_THRESHOLDS = {DAY_FULL: 25200, DAY_HALF: 14400}
+BREAK_TARGET = 5400
+
+# ---------------- STATE ----------------
+if "member_points" not in st.session_state:
+    st.session_state.member_points = None
+if "leader_points" not in st.session_state:
+    st.session_state.leader_points = None
+
+# ---------------- UTILS ----------------
+def now_pune():
+    return dt.datetime.now(PUNE_TZ).replace(tzinfo=None)
+
+def format_clock(sec):
+    sec = max(sec, 0)
+    h = sec // 3600
+    m = (sec % 3600) // 60
+    s = sec % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+def format_human(sec):
+    sec = max(sec, 0)
+    h = sec // 3600
+    m = (sec % 3600) // 60
+    return f"{h}h {m}m" if h else f"{m}m"
+
+def extract_times(text):
+    matches = re.findall(r"\b(?:[01]?\d|2[0-3]):[0-5]\d\b", text)
+    today = now_pune().date()
+    pts = []
+    last = None
+
+    for m in matches:
+        h, mi = map(int, m.split(":"))
+        t = dt.datetime.combine(today, dt.time(h, mi))
+        if last and t < last:
+            today += dt.timedelta(days=1)
+            t = dt.datetime.combine(today, dt.time(h, mi))
+        pts.append(t)
+        last = t
+
+    return pts
+
+def analyze(points):
     now = now_pune()
-    result = analyze_sessions(points, now)
-    required = threshold(day_type, leader)
-    total_work = result["total_work"] + result["ongoing_work"]
-    remaining = max(required - total_work,0)
-    deadline = now + dt.timedelta(seconds=remaining)
-    remaining_break = max(BREAK_TARGET - result["total_break"],0)
-    
-    stats = {
-        "Total Work": total_work,
-        "Break Time": result["total_break"],
-        "Total Time": total_work + result["total_break"],
-        "Remaining Work": remaining,
-        "Remaining Break": remaining_break
-    }
-    
-    st.caption(f"{'👑 Leader' if leader else '👤 Member'} Clocked in: {points[0].strftime('%I:%M %p').lstrip('0')} on {points[0].strftime('%d %b %Y')}")
-    
-    render_stats(stats)
-    
-    if result["has_ongoing"]:
-        if st.button("📋 Show/Hide Session Details", key=f"{'leader' if leader else 'member'}_toggle"):
-            st.session_state[f"show_{'leader' if leader else 'member'}_sessions"] = not st.session_state.get(f"show_{'leader' if leader else 'member'}_sessions", False)
-        if st.session_state.get(f"show_{'leader' if leader else 'member'}_sessions", False):
-            render_sessions(result["work_sessions"], result["break_sessions"])
-    
-    render_logout(deadline, points[0], now)
+    work, breaks = [], []
+    tw, tb = 0, 0
 
-# -------------------- HEADER --------------------
-col1, col2, col3 = st.columns([1,8,2])
-with col1: st.markdown('<span style="font-size:2.5rem;">⏱️</span>', unsafe_allow_html=True)
-with col2:
-    st.title("TimeTrack Pro")
-    st.caption("Intelligent Biometric Time Analysis")
-with col3:
-    theme_label = "🌙 Dark Mode" if st.session_state.theme_mode=="light" else "☀️ Light Mode"
-    if st.button(theme_label, key="theme_toggle"):
-        st.session_state.theme_mode = "dark" if st.session_state.theme_mode=="light" else "light"
-        st.experimental_rerun()
+    for i in range(len(points) - 1):
+        d = int((points[i+1] - points[i]).total_seconds())
+        s = {
+            "start": points[i].strftime("%I:%M %p").lstrip("0"),
+            "end": points[i+1].strftime("%I:%M %p").lstrip("0"),
+            "dur": d,
+            "human": format_human(d)
+        }
+        if i % 2 == 0:
+            work.append(s)
+            tw += d
+        else:
+            breaks.append(s)
+            tb += d
 
-st.caption(f"📍 Pune, India (IST) • {now_pune().strftime('%A, %d %B %Y • %I:%M:%S %p')}")
+    ongoing = 0
+    if len(points) % 2 == 1:
+        last = points[-1]
+        ongoing = int((now - last).total_seconds())
+        work.append({
+            "start": last.strftime("%I:%M %p").lstrip("0"),
+            "end": now.strftime("%I:%M %p").lstrip("0"),
+            "human": format_human(ongoing),
+            "ongoing": True
+        })
 
-# -------------------- TABS --------------------
-tab1, tab2 = st.tabs(["👤 TEAM MEMBER", "👑 TEAM LEADER"])
+    return work, breaks, tw, tb, ongoing
 
+# ---------------- UI STYLE ----------------
+st.markdown("""
+<style>
+.stApp {background:#f5f7fb;}
+h1 {background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+-webkit-background-clip:text;color:transparent;}
+
+.card {
+background:white;
+padding:1rem;
+border-radius:15px;
+text-align:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.session {
+background:white;
+padding:1rem;
+border-radius:15px;
+margin-top:1rem;
+}
+
+.success {
+background:linear-gradient(135deg,#10b981,#059669);
+color:white;
+padding:1rem;
+border-radius:15px;
+text-align:center;
+font-weight:600;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------- RENDER ----------------
+def render_dashboard(points, day_type, leader=False):
+    work, breaks, tw, tb, ongoing = analyze(points)
+
+    req = LEADER_THRESHOLDS[day_type] if leader else MEMBER_THRESHOLDS[day_type]
+    total = tw + ongoing
+    rem = max(req - total, 0)
+
+    st.markdown("### 📊 Dashboard")
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    with c1:
+        st.markdown(f'<div class="card">Work<br><b>{format_clock(total)}</b></div>', unsafe_allow_html=True)
+    with c2:
+        st.markdown(f'<div class="card">Break<br><b>{format_clock(tb)}</b></div>', unsafe_allow_html=True)
+    with c3:
+        st.markdown(f'<div class="card">Remaining<br><b>{format_clock(rem)}</b></div>', unsafe_allow_html=True)
+    with c4:
+        st.markdown(f'<div class="card">Sessions<br><b>{len(work)}</b></div>', unsafe_allow_html=True)
+
+    st.markdown("### 🧠 Sessions")
+
+    for s in work:
+        live = " 🔴 LIVE" if s.get("ongoing") else ""
+        st.markdown(f'<div class="session">🕐 {s["start"]} → {s["end"]}{live} | {s["human"]}</div>', unsafe_allow_html=True)
+
+    for s in breaks:
+        st.markdown(f'<div class="session">☕ {s["start"]} → {s["end"]} | {s["human"]}</div>', unsafe_allow_html=True)
+
+    if rem == 0:
+        st.markdown('<div class="success">🎉 TARGET COMPLETE</div>', unsafe_allow_html=True)
+
+# ---------------- HEADER ----------------
+st.title("⏱️ TimeTrack Pro")
+st.caption(f"📍 IST • {now_pune().strftime('%A %d %B %Y %I:%M:%S %p')}")
+
+# ---------------- TABS ----------------
+tab1, tab2 = st.tabs(["👤 Member", "👑 Leader"])
+
+# MEMBER
 with tab1:
-    day_type = st.radio("Day Type", DAY_TYPE_OPTIONS, index=0 if st.session_state.member_day_type==DAY_FULL else 1, horizontal=True, key="member_day_radio")
-    st.session_state.member_day_type = day_type
-    with st.form("member_form"):
-        log = st.text_area("Biometric Log", height=150, placeholder="Paste your biometric log here...\nExample:\n09:15\n13:00\n14:00\n18:30", key="member_input")
-        submitted = st.form_submit_button("🔍 Calculate & Track")
-    if submitted:
-        pts = parse_log(normalize_text(log))
+    d = st.radio("Day Type", DAY_TYPE_OPTIONS, horizontal=True, key="m_day")
+
+    with st.form("m_form"):
+        txt = st.text_area("Paste Log", key="m_txt")
+        sub = st.form_submit_button("Calculate")
+
+    if sub:
+        pts = extract_times(txt)
         if pts:
             st.session_state.member_points = pts
-            st.success(f"✅ Successfully parsed {len(pts)} time entries")
         else:
-            st.session_state.member_points = None
-            st.error("❌ Please enter valid times in HH:MM format")
-    if st.session_state.member_points: dashboard(st.session_state.member_points, day_type, leader=False)
+            st.error("Invalid input")
 
+    if st.session_state.member_points:
+        render_dashboard(st.session_state.member_points, d)
+
+# LEADER
 with tab2:
-    day_type = st.radio("Day Type", DAY_TYPE_OPTIONS, index=0 if st.session_state.leader_day_type==DAY_FULL else 1, horizontal=True, key="leader_day_radio")
-    st.session_state.leader_day_type = day_type
-    with st.form("leader_form"):
-        log = st.text_area("Biometric Log", height=150, placeholder="Paste your biometric log here...\nExample:\n09:15\n13:00\n14:00\n18:30", key="leader_input")
-        submitted = st.form_submit_button("🔍 Calculate & Track")
-    if submitted:
-        pts = parse_log(normalize_text(log))
+    d = st.radio("Day Type", DAY_TYPE_OPTIONS, horizontal=True, key="l_day")
+
+    with st.form("l_form"):
+        txt = st.text_area("Paste Log", key="l_txt")
+        sub = st.form_submit_button("Calculate")
+
+    if sub:
+        pts = extract_times(txt)
         if pts:
             st.session_state.leader_points = pts
-            st.success(f"✅ Successfully parsed {len(pts)} time entries")
         else:
-            st.session_state.leader_points = None
-            st.error("❌ Please enter valid times in HH:MM format")
-    if st.session_state.leader_points: dashboard(st.session_state.leader_points, day_type, leader=True)
+            st.error("Invalid input")
+
+    if st.session_state.leader_points:
+        render_dashboard(st.session_state.leader_points, d, leader=True)
