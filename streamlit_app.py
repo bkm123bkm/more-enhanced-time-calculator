@@ -7,7 +7,7 @@ import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parent
 ICON_PATH = BASE_DIR / "Icon.png"
-PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "💎"
+PAGE_ICON = str(ICON_PATH) if ICON_PATH.exists() else "⏱️"
 PUNE_TZ = ZoneInfo("Asia/Kolkata")
 
 def now_pune() -> dt.datetime:
@@ -37,60 +37,56 @@ if "show_leader_sessions" not in st.session_state:
     st.session_state.show_leader_sessions = False
 
 # ============================================================================
-# CSS - Modern Glass-morphism (fixed for no overlap)
+# CSS - Modern Minimal Design (less circular, more professional)
 # ============================================================================
 
-def inject_css():
-    """Inject theme-specific CSS with high specificity to avoid overlap"""
+def get_theme_css():
     if st.session_state.theme_mode == "light":
-        bg_gradient = "linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%)"
-        card_bg = "rgba(255, 255, 255, 0.85)"
-        card_bg_hover = "rgba(255, 255, 255, 0.95)"
-        text_primary = "#1e293b"
-        text_secondary = "#5a6e7c"
-        accent = "#2563eb"
-        accent_gradient = "linear-gradient(135deg, #1e2b3c 0%, #2c3e50 100%)"
-        border = "rgba(0, 0, 0, 0.08)"
-        shadow = "0 8px 32px rgba(0, 0, 0, 0.05)"
+        bg = "#f8fafc"
+        surface = "#ffffff"
+        surface_secondary = "#f1f5f9"
+        text_primary = "#0f172a"
+        text_secondary = "#475569"
+        border = "#e2e8f0"
+        accent = "#3b82f6"
+        accent_hover = "#2563eb"
+        shadow = "0 1px 3px rgba(0,0,0,0.05)"
+        shadow_hover = "0 4px 12px rgba(0,0,0,0.08)"
     else:
-        bg_gradient = "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%)"
-        card_bg = "rgba(30, 30, 45, 0.8)"
-        card_bg_hover = "rgba(40, 40, 58, 0.9)"
-        text_primary = "#e0e0e0"
-        text_secondary = "#8a8a9e"
-        accent = "#60a5fa"
-        accent_gradient = "linear-gradient(135deg, #3a3a5a 0%, #2a2a44 100%)"
-        border = "rgba(255, 255, 255, 0.08)"
-        shadow = "0 8px 32px rgba(0, 0, 0, 0.2)"
+        bg = "#0f172a"
+        surface = "#1e293b"
+        surface_secondary = "#334155"
+        text_primary = "#f1f5f9"
+        text_secondary = "#94a3b8"
+        border = "#334155"
+        accent = "#3b82f6"
+        accent_hover = "#60a5fa"
+        shadow = "0 1px 3px rgba(0,0,0,0.3)"
+        shadow_hover = "0 4px 12px rgba(0,0,0,0.4)"
     
-    css = f"""
+    return f"""
     <style>
-        /* Global reset & fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+        /* Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
         
         * {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }}
         
         .stApp {{
-            background: {bg_gradient};
+            background: {bg};
         }}
         
-        /* Main container padding - prevent overlapping */
+        /* Main container - no overflow */
         .main .block-container {{
-            padding-top: 1rem;
-            padding-bottom: 2rem;
+            padding: 1.5rem 2rem;
             max-width: 1400px;
         }}
         
-        /* Glass header */
-        .glass-header {{
-            background: {card_bg};
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
+        /* Header - clean border */
+        .modern-header {{
+            background: {surface};
+            border-radius: 12px;
             padding: 1.25rem 2rem;
             margin-bottom: 2rem;
             border: 1px solid {border};
@@ -98,278 +94,242 @@ def inject_css():
         }}
         
         h1 {{
-            font-size: 2rem !important;
+            font-size: 1.8rem !important;
             font-weight: 700 !important;
-            background: {accent_gradient};
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent !important;
-            letter-spacing: -0.02em;
+            color: {text_primary} !important;
             margin: 0 !important;
+            letter-spacing: -0.02em;
         }}
         
-        .caption-text {{
-            color: {text_secondary} !important;
-            font-size: 0.85rem !important;
+        .caption {{
+            color: {text_secondary};
+            font-size: 0.85rem;
+            margin-top: 4px;
         }}
         
-        /* Stats using native columns + custom metric styling */
+        /* Stats grid using columns */
         div[data-testid="stMetric"] {{
-            background: {card_bg};
-            backdrop-filter: blur(8px);
-            border-radius: 24px;
+            background: {surface};
+            border-radius: 12px;
             padding: 1rem;
             border: 1px solid {border};
-            transition: all 0.3s ease;
-            text-align: center;
+            box-shadow: {shadow};
+            transition: all 0.2s ease;
         }}
         
         div[data-testid="stMetric"]:hover {{
-            transform: translateY(-3px);
-            background: {card_bg_hover};
-            box-shadow: {shadow};
+            transform: translateY(-2px);
+            box-shadow: {shadow_hover};
         }}
         
         div[data-testid="stMetric"] label {{
             font-size: 0.7rem !important;
-            text-transform: uppercase;
-            letter-spacing: 1px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: {text_secondary} !important;
         }}
         
         div[data-testid="stMetric"] div[data-testid="stMetricValue"] {{
             font-size: 1.75rem !important;
             font-weight: 700;
-            font-family: 'Inter', monospace;
-            background: {accent_gradient};
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: {text_primary} !important;
         }}
         
-        /* Session panels - use CSS grid for proper layout */
+        /* Cards for forms */
+        .card {{
+            background: {surface};
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0 1.5rem 0;
+            border: 1px solid {border};
+            box-shadow: {shadow};
+        }}
+        
+        .card-title {{
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: {text_primary};
+            font-size: 0.9rem;
+        }}
+        
+        /* Buttons - less rounded */
+        .stButton > button {{
+            background: {accent} !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 1.25rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }}
+        
+        .stButton > button:hover {{
+            background: {accent_hover} !important;
+            transform: translateY(-1px);
+        }}
+        
+        /* Text area */
+        .stTextArea textarea {{
+            border-radius: 8px !important;
+            border: 1px solid {border} !important;
+            background: {surface} !important;
+            color: {text_primary} !important;
+            font-family: 'Inter', monospace !important;
+            font-size: 0.85rem !important;
+        }}
+        
+        .stTextArea textarea:focus {{
+            border-color: {accent} !important;
+            box-shadow: 0 0 0 2px {accent}30 !important;
+        }}
+        
+        /* Radio buttons - normal, not pill-shaped */
+        .stRadio > div {{
+            display: flex;
+            gap: 1.5rem;
+            background: transparent;
+        }}
+        
+        .stRadio label {{
+            font-weight: 500;
+            color: {text_primary};
+        }}
+        
+        /* Tabs - underline style */
+        [data-testid="stTabs"] [role="tablist"] {{
+            border-bottom: 2px solid {border};
+            gap: 2rem;
+            background: transparent;
+            padding: 0;
+        }}
+        
+        [data-testid="stTabs"] [role="tab"] {{
+            border-radius: 0 !important;
+            padding: 0.5rem 0 !important;
+            font-weight: 600 !important;
+            color: {text_secondary} !important;
+            border: none !important;
+            background: transparent !important;
+        }}
+        
+        [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
+            color: {accent} !important;
+            border-bottom: 2px solid {accent} !important;
+            background: transparent !important;
+        }}
+        
+        /* Session panels grid */
         .sessions-grid {{
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.25rem;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
         }}
         
         .session-card {{
-            background: {card_bg};
-            backdrop-filter: blur(8px);
-            border-radius: 24px;
+            background: {surface};
+            border-radius: 12px;
             border: 1px solid {border};
             overflow: hidden;
         }}
         
         .session-header {{
-            padding: 0.9rem 1.25rem;
+            padding: 0.75rem 1rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
             border-bottom: 1px solid {border};
-        }}
-        
-        .session-header.work {{
-            background: rgba(59, 130, 246, 0.08);
-            color: {accent};
-        }}
-        
-        .session-header.break {{
-            background: rgba(245, 158, 11, 0.08);
-            color: #f59e0b;
+            background: {surface_secondary};
+            color: {text_primary};
         }}
         
         .session-row {{
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1.25rem;
+            padding: 0.6rem 1rem;
             border-bottom: 1px solid {border};
+            font-size: 0.85rem;
         }}
         
         .session-time {{
             color: {text_secondary};
-            font-size: 0.9rem;
-            font-weight: 500;
         }}
         
         .session-duration {{
-            font-weight: 700;
-            font-size: 0.9rem;
-        }}
-        
-        .session-duration.work {{
+            font-weight: 600;
             color: {accent};
         }}
         
-        .session-duration.break {{
-            color: #f59e0b;
-        }}
-        
         .live-badge {{
-            background: linear-gradient(135deg, #10b981, #059669);
-            padding: 2px 10px;
-            border-radius: 30px;
+            background: #10b981;
+            padding: 2px 8px;
+            border-radius: 6px;
             font-size: 0.6rem;
             font-weight: 600;
             color: white;
-            margin-left: 10px;
-            display: inline-block;
+            margin-left: 8px;
         }}
         
         /* Logout card */
         .logout-card {{
-            background: {card_bg};
-            border-radius: 24px;
-            padding: 1.25rem;
+            background: {surface};
+            border-radius: 12px;
+            padding: 1rem;
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             border: 1px solid {border};
         }}
         
         .logout-time {{
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: {accent_gradient};
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: {accent};
             font-family: monospace;
         }}
         
         .success-banner {{
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 24px;
-            padding: 1.25rem;
+            background: #10b981;
+            border-radius: 12px;
+            padding: 1rem;
             text-align: center;
-            margin-top: 1.5rem;
-            animation: slideUp 0.4s ease;
-        }}
-        
-        .success-banner p {{
-            color: white !important;
+            margin-top: 1rem;
+            color: white;
             font-weight: 600;
-            margin: 0;
-        }}
-        
-        @keyframes slideUp {{
-            from {{ opacity: 0; transform: translateY(15px); }}
-            to {{ opacity: 1; transform: translateY(0); }}
-        }}
-        
-        /* Form cards */
-        .form-card {{
-            background: {card_bg};
-            backdrop-filter: blur(8px);
-            border-radius: 28px;
-            padding: 1.25rem 1.5rem;
-            margin: 1rem 0 1.5rem 0;
-            border: 1px solid {border};
-        }}
-        
-        /* Buttons */
-        .stButton > button {{
-            background: {accent_gradient} !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 40px !important;
-            padding: 0.5rem 1.5rem !important;
-            font-weight: 600 !important;
-            transition: all 0.2s ease !important;
-            width: 100% !important;
-        }}
-        
-        .stButton > button:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }}
-        
-        /* Text area */
-        .stTextArea textarea {{
-            border-radius: 20px !important;
-            border: 1px solid {border} !important;
-            background: {card_bg} !important;
-            color: {text_primary} !important;
-            font-family: monospace !important;
-        }}
-        
-        /* Radio group */
-        .stRadio > div {{
-            gap: 0.5rem;
-            background: {card_bg};
-            padding: 0.4rem;
-            border-radius: 60px;
-            display: inline-flex;
-            border: 1px solid {border};
-        }}
-        
-        .stRadio label {{
-            padding: 0.4rem 1.2rem !important;
-            border-radius: 40px !important;
-            font-weight: 500 !important;
-        }}
-        
-        /* Tabs */
-        [data-testid="stTabs"] [role="tablist"] {{
-            gap: 0.5rem;
-            background: {card_bg};
-            border-radius: 60px;
-            padding: 0.4rem;
-            border: 1px solid {border};
-            margin-bottom: 1.5rem;
-        }}
-        
-        [data-testid="stTabs"] [role="tab"] {{
-            border-radius: 40px !important;
-            padding: 0.4rem 1.2rem !important;
-            font-weight: 500 !important;
-        }}
-        
-        [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
-            background: {accent_gradient} !important;
-            color: white !important;
         }}
         
         hr {{
             margin: 1.5rem 0;
-            border: none;
-            height: 1px;
-            background: {border};
+            border-color: {border};
         }}
         
-        .section-header {{
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin: 0 0 1rem 0;
-            background: {accent_gradient};
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }}
-        
-        /* Override Streamlit default column gap to prevent overlap */
-        .row-widget.stHorizontal {{
-            gap: 1rem;
-        }}
-        
-        /* Fix for theme toggle button alignment */
+        /* Theme toggle button special */
         div[data-testid="column"]:nth-child(3) .stButton > button {{
-            background: {card_bg} !important;
+            background: {surface_secondary} !important;
             color: {text_primary} !important;
             border: 1px solid {border} !important;
         }}
+        
+        .section-title {{
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+            color: {text_primary};
+        }}
+        
+        /* Success/error */
+        .stAlert {{
+            border-radius: 8px;
+            border: none;
+        }}
     </style>
     """
-    st.markdown(css, unsafe_allow_html=True)
 
-# Inject CSS on every rerun (theme changes)
-inject_css()
+# Apply CSS
+st.markdown(get_theme_css(), unsafe_allow_html=True)
 
 # ============================================================================
-# Utility functions (unchanged, but included for completeness)
+# Helper functions
 # ============================================================================
 
 def format_clock(seconds: int) -> str:
@@ -476,7 +436,7 @@ def analyze_sessions(points: list[dt.datetime], current: dt.datetime = None) -> 
     }
 
 # ============================================================================
-# Dashboard Components (using native st.metric to avoid overlap)
+# UI Components
 # ============================================================================
 
 def render_stats_grid(stats: dict):
@@ -495,36 +455,36 @@ def render_stats_grid(stats: dict):
 
 def render_sessions_panel(work: list, breaks: list):
     st.markdown('<div class="sessions-grid">', unsafe_allow_html=True)
-    # Work column
+    # Work
     st.markdown('<div class="session-card">', unsafe_allow_html=True)
-    st.markdown(f'<div class="session-header work">🎯 WORK SESSIONS · {len(work)}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="session-header">📋 WORK SESSIONS ({len(work)})</div>', unsafe_allow_html=True)
     if work:
         for s in work:
             live = '<span class="live-badge">LIVE</span>' if s.get("ongoing") else ""
             st.markdown(
                 f'<div class="session-row">'
                 f'<span class="session-time">{s["start"]} → {s["end"]}{live}</span>'
-                f'<span class="session-duration work">{s["human"]}</span>'
+                f'<span class="session-duration">{s["human"]}</span>'
                 f'</div>',
                 unsafe_allow_html=True
             )
     else:
-        st.markdown('<div class="session-row"><span class="session-time">— No work sessions —</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="session-row"><span class="session-time">None</span></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-    # Break column
+    # Breaks
     st.markdown('<div class="session-card">', unsafe_allow_html=True)
-    st.markdown(f'<div class="session-header break">✨ BREAK SESSIONS · {len(breaks)}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="session-header">☕ BREAK SESSIONS ({len(breaks)})</div>', unsafe_allow_html=True)
     if breaks:
         for s in breaks:
             st.markdown(
                 f'<div class="session-row">'
                 f'<span class="session-time">{s["start"]} → {s["end"]}</span>'
-                f'<span class="session-duration break">{s["human"]}</span>'
+                f'<span class="session-duration">{s["human"]}</span>'
                 f'</div>',
                 unsafe_allow_html=True
             )
     else:
-        st.markdown('<div class="session-row"><span class="session-time">— No breaks —</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="session-row"><span class="session-time">None</span></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -535,20 +495,14 @@ def render_logout_status(deadline: dt.datetime, first: dt.datetime, now: dt.date
             time_str = deadline.strftime("%d %b, %I:%M %p").lstrip("0")
         st.markdown(
             f'<div class="logout-card">'
-            f'<div style="font-size:0.7rem; letter-spacing:1px; margin-bottom:6px;">🚀 EARLIEST LOGOUT</div>'
+            f'<div style="font-size:0.7rem; color:#64748b;">Earliest logout</div>'
             f'<div class="logout-time">{time_str}</div>'
             f'</div>',
             unsafe_allow_html=True
         )
     else:
-        st.markdown(
-            '<div class="success-banner">'
-            '<p>✨ TARGET ACHIEVED! You\'re Free to Go! ✨</p>'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="success-banner">✓ Target completed! You\'re free to go.</div>', unsafe_allow_html=True)
 
-# Dashboard functions
 def member_dashboard(points: list, day_type: str):
     now = now_pune()
     result = analyze_sessions(points, now)
@@ -565,11 +519,11 @@ def member_dashboard(points: list, day_type: str):
     }
     st.caption(f"👤 First punch: {points[0].strftime('%I:%M %p').lstrip('0')} • {points[0].strftime('%d %b %Y')}")
     render_stats_grid(stats)
-    # Session toggle
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if result["has_ongoing"]:
-            btn_label = "📋 Hide Details" if st.session_state.show_member_sessions else "📋 Show Session Details"
+            btn_label = "Hide Details" if st.session_state.show_member_sessions else "Show Session Details"
             if st.button(btn_label, key="member_session_toggle", use_container_width=True):
                 st.session_state.show_member_sessions = not st.session_state.show_member_sessions
                 st.rerun()
@@ -593,10 +547,11 @@ def leader_dashboard(points: list, day_type: str):
     }
     st.caption(f"👑 First punch: {points[0].strftime('%I:%M %p').lstrip('0')} • {points[0].strftime('%d %b %Y')}")
     render_stats_grid(stats)
+    
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if result["has_ongoing"]:
-            btn_label = "📋 Hide Details" if st.session_state.show_leader_sessions else "📋 Show Session Details"
+            btn_label = "Hide Details" if st.session_state.show_leader_sessions else "Show Session Details"
             if st.button(btn_label, key="leader_session_toggle", use_container_width=True):
                 st.session_state.show_leader_sessions = not st.session_state.show_leader_sessions
                 st.rerun()
@@ -604,7 +559,6 @@ def leader_dashboard(points: list, day_type: str):
         render_sessions_panel(result["work_sessions"], result["break_sessions"])
     render_logout_status(deadline, points[0], now)
 
-# Live fragments
 @st.fragment(run_every="1s")
 def member_live():
     if st.session_state.member_points:
@@ -616,31 +570,31 @@ def leader_live():
         leader_dashboard(st.session_state.leader_points, st.session_state.leader_day_type)
 
 # ============================================================================
-# Header
+# App Layout
 # ============================================================================
-st.markdown('<div class="glass-header">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1, 6, 2])
+
+# Header
+st.markdown('<div class="modern-header">', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 5, 2])
 with col1:
-    st.markdown('<span style="font-size: 2.5rem;">💎</span>', unsafe_allow_html=True)
+    st.markdown('<span style="font-size: 2rem;">⏱️</span>', unsafe_allow_html=True)
 with col2:
     st.title("TimeTrack Pro")
-    st.markdown('<span class="caption-text">Intelligent time analytics with live tracking</span>', unsafe_allow_html=True)
+    st.markdown('<div class="caption">Intelligent time analytics with live tracking</div>', unsafe_allow_html=True)
 with col3:
     theme_label = "🌙 Dark Mode" if st.session_state.theme_mode == "light" else "☀️ Light Mode"
     if st.button(theme_label, key="theme_toggle", use_container_width=True):
         st.session_state.theme_mode = "dark" if st.session_state.theme_mode == "light" else "light"
         st.rerun()
-st.markdown(f'<span class="caption-text" style="display: block; margin-top: 8px;">📍 Pune, India (IST) • {now_pune().strftime("%A, %d %B %Y • %I:%M:%S %p")}</span>', unsafe_allow_html=True)
+st.markdown(f'<div class="caption">📍 Pune, India (IST) • {now_pune().strftime("%A, %d %B %Y • %I:%M:%S %p")}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ============================================================================
 # Tabs
-# ============================================================================
-tab1, tab2 = st.tabs(["👤 TEAM MEMBER", "👑 TEAM LEADER"])
+tab1, tab2 = st.tabs(["TEAM MEMBER", "TEAM LEADER"])
 
 with tab1:
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
-    st.markdown('<div style="margin-bottom: 1rem; font-weight: 600;">📅 Day Configuration</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📅 Day Configuration</div>', unsafe_allow_html=True)
     day_type = st.radio(
         "Select shift type",
         DAY_TYPE_OPTIONS,
@@ -652,34 +606,34 @@ with tab1:
     st.session_state.member_day_type = day_type
     st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
-    st.markdown('<div style="margin-bottom: 1rem; font-weight: 600;">📝 Biometric Log Input</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📝 Biometric Log Input</div>', unsafe_allow_html=True)
     with st.form("member_form"):
         log = st.text_area(
-            "Paste your punch times",
-            height=140,
+            "Paste punch times (HH:MM format)",
+            height=120,
             placeholder="09:15\n13:00\n14:00\n18:30",
             key="member_input",
             label_visibility="collapsed"
         )
-        submitted = st.form_submit_button("✨ Analyze & Track", use_container_width=True)
+        submitted = st.form_submit_button("Analyze & Track", use_container_width=True)
     if submitted:
         raw = normalize_paste_text(log)
         pts = parse_log(raw)
         if pts:
             st.session_state.member_points = pts
-            st.success(f"✓ Successfully parsed {len(pts)} time entries")
+            st.success(f"✓ Parsed {len(pts)} time entries")
         else:
-            st.error("✗ Please enter valid times in HH:MM format (e.g., 09:15)")
+            st.error("✗ Invalid format. Use HH:MM (e.g., 09:15)")
             st.session_state.member_points = None
     st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="section-header">📊 Live Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">📊 Live Dashboard</div>', unsafe_allow_html=True)
     member_live()
 
 with tab2:
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
-    st.markdown('<div style="margin-bottom: 1rem; font-weight: 600;">📅 Day Configuration</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📅 Day Configuration</div>', unsafe_allow_html=True)
     day_type = st.radio(
         "Select shift type",
         DAY_TYPE_OPTIONS,
@@ -691,27 +645,27 @@ with tab2:
     st.session_state.leader_day_type = day_type
     st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
-    st.markdown('<div style="margin-bottom: 1rem; font-weight: 600;">📝 Biometric Log Input</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="card-title">📝 Biometric Log Input</div>', unsafe_allow_html=True)
     with st.form("leader_form"):
         log = st.text_area(
-            "Paste your punch times",
-            height=140,
+            "Paste punch times (HH:MM format)",
+            height=120,
             placeholder="09:15\n13:00\n14:00\n18:30",
             key="leader_input",
             label_visibility="collapsed"
         )
-        submitted = st.form_submit_button("✨ Analyze & Track", use_container_width=True)
+        submitted = st.form_submit_button("Analyze & Track", use_container_width=True)
     if submitted:
         raw = normalize_paste_text(log)
         pts = parse_log(raw)
         if pts:
             st.session_state.leader_points = pts
-            st.success(f"✓ Successfully parsed {len(pts)} time entries")
+            st.success(f"✓ Parsed {len(pts)} time entries")
         else:
-            st.error("✗ Please enter valid times in HH:MM format (e.g., 09:15)")
+            st.error("✗ Invalid format. Use HH:MM (e.g., 09:15)")
             st.session_state.leader_points = None
     st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="section-header">📊 Live Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">📊 Live Dashboard</div>', unsafe_allow_html=True)
     leader_live()
